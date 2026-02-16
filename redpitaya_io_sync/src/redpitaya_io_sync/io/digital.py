@@ -9,9 +9,9 @@ class DigitalIo(BaseIo):
         super().__init__(addr)
 
     def output(self, t: int, val: int, mask: int = 0xffffffff):
-        self.add_instruction(t=t, cmd=DigitalIoCmd.OUTPUT, data=val, mask=mask)
+        self._add_instruction(cmd=DigitalIoCmd.OUTPUT, t=t, data=val, mask=mask)
         
     def tristate(self, t: int, val: int, mask: int = 0xffffffff):
-        self.add_instruction(t=t, cmd=DigitalIoCmd.TRISTATE, data=val, mask=mask)
+        self._add_instruction(cmd=DigitalIoCmd.TRISTATE, t=t, data=val, mask=mask)
 
     

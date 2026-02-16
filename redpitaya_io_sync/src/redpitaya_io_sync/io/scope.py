@@ -55,9 +55,8 @@ class Scope(BaseIo):
             raise Exception(f"Decimation factor {dec} is not a power of 2.")
         
         #Determine command type and Scope time window
-        cmd = ScopeCmd.ACQ_TLAST
+        cmd = ScopeCmd.ACQ
         dec_pow_2 = int(np.log2(dec))
-        acq_label = label
         acq_t_start = t
         acq_t_end = t + samples * dec
         
@@ -78,18 +77,17 @@ class Scope(BaseIo):
             raise Exception(f"Acquisition label '{label}' already exists.")
         
         #Add Scope instruction
-        self._add_instruction(t=t, cmd=cmd, data=((dec_pow_2 << 24) | samples), mask=0xffffffff)
+        self._add_instruction(cmd=cmd, t=t, data=((dec_pow_2 << 24) | samples), mask=0xffffffff)
         self._acq_dict[label] = {'t': t, 'samples': samples, 'dec': dec}
 
     def _acquire_tlast(self):
         samples = 1
         t = 0
         for _acq_label in self._acq_dict.keys():
-            _acq_t_start = self._acq_dict[_acq_label]['t']
             _acq_t_end = self._acq_dict[_acq_label]['t'] + self._acq_dict[_acq_label]['samples'] * self._acq_dict[_acq_label]['dec'] 
         t = max(t, _acq_t_end)
 
-        self._add_instruction(t=t, cmd=ScopeCmd.ACQ_TLAST, data=samples, mask=0xffffffff)
-
+        self._add_instruction(cmd=ScopeCmd.ACQ_TLAST, t=t, data=samples, mask=0xffffffff)
+        
     def _get_acquisition_dict(self):
         return self._acq_dict
