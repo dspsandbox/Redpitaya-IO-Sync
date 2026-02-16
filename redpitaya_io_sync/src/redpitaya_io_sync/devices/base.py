@@ -5,8 +5,8 @@ from redpitaya_io_sync.sequencer import IoSequence
 
 
 class RpDeviceBase:
-    def __init__(self, url: str):
-        self.url = url
+    def __init__(self, ip: str):
+        self.ip = ip
         self._loaded: Optional[IoSequence] = None
         self._running: bool = False
 
@@ -23,7 +23,7 @@ class RpDeviceBase:
 
     def get_status(self) -> Dict[str, Any]:
         return {
-            "url": self.url,
+            "ip": self.ip,
             "loaded": self._loaded is not None,
             "running": self._running,
             "frames": 0 if self._loaded is None else len(self._loaded.frames),

@@ -2,9 +2,7 @@ import numpy as np
 
 class BaseIoCmd:
     NOP = 0xF
-    ACQ = 0xE
-    ACQ_TLAST = 0xD
-    SYNC_IDLE = 0xC
+    SYNC_IDLE = 0xE
 
 
 
@@ -13,7 +11,7 @@ PREALLOCATION_BLOCK_LEN = 1024
 class BaseIo():
     def __init__(self, addr):
         self._addr = addr
-        self._t_last = -1
+        self._t = -1
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._mask_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint32)
@@ -22,7 +20,7 @@ class BaseIo():
         self.changed = False
     
     def reset(self):
-        self._t_last = -1
+        self._t = -1
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._mask_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint32)
@@ -30,14 +28,18 @@ class BaseIo():
         self._idx = 0
         self.changed = False
 
-
+    def _get_idx(self):
+        return self._idx 
     
+    def _set_idx(self, val):
+        self._idx = val
 
-    def add_instruction(self, t: int, cmd: int, data: int, mask: int = 0xffffffff):
+
+    def _add_instruction(self, t: int, cmd: int, data: int, mask: int = 0xffffffff):
         #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
         #Addr  |   Cmd  |   Time   |   Data
 
-        if t <= self._t_last:
+        if t <= self._t:
             idx_previous_list = np.where(self._t_list == t)[0]
             if len(idx_previous_list):
                 idx_previous = idx_previous_list[0]
@@ -62,8 +64,8 @@ class BaseIo():
         else:
 
             #Insert NOP instructions wherever every 2^24 clk cycles
-            while (t - self._t_last) > (1<<24):
-                self.add_instruction(self._t_last + (1 << 24), BaseIoCmd.NOP, 0, 0)
+            while (t - self._t) > (1<<24):
+                self._add_instruction(self._t + (1 << 24), BaseIoCmd.NOP, 0, 0)
 
             #Create new instruction
             instr = ((self._addr << 60) | (cmd << 56) | ((t & 0xffffff) << 32) | (data & mask))
@@ -79,7 +81,7 @@ class BaseIo():
             self._t_list[self._idx] = t
             self._mask_list[self._idx] = mask
             self._idx += 1
-            self._t_last = max(self._t_last, t)
+            self._t = max(self._t, t)
             self.changed = True
 
     
@@ -90,61 +92,17 @@ class BaseIo():
         self._mask_list[:self._idx] = self._mask_list[idx_sorted]
         self._sorted = True
 
-    def add_acquisition(self, t: int, samples: int, dec : int,  label: str | None = None, tlast=False):
-        
-        #Check acquisition parameters
-        SAMPLE_MIN = 1
-        SAMPLE_MAX = 1 << 24 
-        DEC_MIN = 1 
-        DEC_MAX = 1 << 32
 
-        if (samples < SAMPLE_MIN) or (samples > SAMPLE_MAX):
-            raise Exception(f"Number of samples {samples} is out of range [{SAMPLE_MIN}, {SAMPLE_MAX}].")
-        if (dec < DEC_MIN) or (dec > DEC_MAX):
-            raise Exception(f"Decimation factor {dec} is out of range [{DEC_MIN}, {DEC_MAX}].")
-        if (dec & (dec - 1)) != 0:
-            raise Exception(f"Decimation factor {dec} is not a power of 2.")
-        
-        #Determine command type and acquisition time window
-        cmd = BaseIoCmd.ACQ_TLAST if tlast else BaseIoCmd.ACQ
-        dec_pow_2 = int(np.log2(dec))
-        acq_label = label
-        acq_t_start = t
-        acq_t_end = t + samples * dec
-        
-        #Check for overlapping acquisitions
-        for _acq_label in self._acq_dict.keys():
-            _acq_t_start = self._acq_dict[acq_label]['t']
-            _acq_t_end = self._acq_dict[acq_label]['t'] + self._acq_dict[acq_label]['samples'] * self._acq_dict[acq_label]['dec']  
-            
-            if (acq_t_start < _acq_t_end) and (_acq_t_start < acq_t_end):
-                raise Exception(f"Acquisition overlaps with previous acquisition '{_acq_label}' from t={_acq_t_start} to t={_acq_t_end}.")
-
-        #Generate default label if none provided
-        if label is None:
-            label = f"acq_t{t}"
-        
-        #Check for duplicate labels
-        if label in self._acq_dict:
-            raise Exception(f"Acquisition label '{label}' already exists.")
-        
-        #Add acquisition instruction
-        self.add_instruction(t=t, cmd=cmd, data=((dec_pow_2 << 24) | samples), mask=0xffffffff)
-        self._acq_dict[label] = {'t': t, 'samples': samples, 'dec': dec}
-
-
-    def add_sync_idle(self, t: int):
-        self.add_instruction(t=t, cmd=BaseIoCmd.SYNC_IDLE, data=0, mask=0)
+    def _add_sync_idle(self, t: int):
+        self._add_instruction(t=t, cmd=BaseIoCmd.SYNC_IDLE, data=0, mask=0)
         
             
-    def get_instruction_list(self):
+    def _get_instruction_list(self):
         if not self._sorted:
             self._sort()
         return self._instr_list[:self._idx]
     
-    def get_acquisition_dict(self):
-        return self._acq_dict
-
+    
 
 
 

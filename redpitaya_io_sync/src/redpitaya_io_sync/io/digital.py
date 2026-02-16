@@ -14,5 +14,4 @@ class DigitalIo(BaseIo):
     def tristate(self, t: int, val: int, mask: int = 0xffffffff):
         self.add_instruction(t=t, cmd=DigitalIoCmd.TRISTATE, data=val, mask=mask)
 
-    def acquire(self, t: int, samples: int, dec: int = 1, label: str | None = None):
-        self.add_acquisition(t=t, samples=samples, dec=dec, label=label)
+    
