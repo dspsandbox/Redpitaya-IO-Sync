@@ -1,10 +1,5 @@
+from unicodedata import name
 import numpy as np
-from io.analog import AnalogIn, AnalogOut
-from io.digital import DigitalIo
-from io.pwm import Pwm
-from io.scope import Scope
-from io.sync import Sync
-
 
 PREALLOCATION_BLOCK_LEN = 1024
 
@@ -24,40 +19,33 @@ class IoAddr:
 
 
 class IoSyncFrame:
-    def __init__(self):
-        self.analog_out_1 = AnalogOut(IoAddr.ANALOG_OUT_1)
-        self.analog_out_2 = AnalogOut(IoAddr.ANALOG_OUT_2)
-        self.analog_in_1 = AnalogIn(IoAddr.ANALOG_IN_1)
-        self.analog_in_2 = AnalogIn(IoAddr.ANALOG_IN_2)
-        self.digital_io = DigitalIo(IoAddr.DIGITAL_IO)
-        self.pwm_1 = Pwm(IoAddr.PWM_1)
-        self.pwm_2 = Pwm(IoAddr.PWM_2)
-        self.pwm_3 = Pwm(IoAddr.PWM_3)
-        self.pwm_4 = Pwm(IoAddr.PWM_4)
-        self.scope_1 = Scope(IoAddr.SCOPE_1)
-        self.scope_2 = Scope(IoAddr.SCOPE_2)
-        self.sync = Sync(IoAddr.SYNC)
+    def __init__(self, device):
+        self._io_dict = {}
+        for io_name in device.io_dict.keys():
+            io_class = device.io_dict[io_name]["class"]
+            io_addr = device.io_dict[io_name]["addr"]
+            self._io_dict[io_name] = io_class(io_addr)
+        
+        self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
+        self._preallocation_len = PREALLOCATION_BLOCK_LEN    
+    
+    def __getattribute__(self, name):
+        try:
+            io = object.__getattribute__(self, "_io_dict")
+        except AttributeError:
+            return object.__getattribute__(self, name)
 
-        #Helper dictionary to access Io objects by name
-        self._io_dict = {
-            "analog_out_1": self.analog_out_1,
-            "analog_out_2": self.analog_out_2,
-            "analog_in_1": self.analog_in_1,
-            "analog_in_2": self.analog_in_2,
-            "digital_io": self.digital_io,
-            "pwm_1": self.pwm_1,
-            "pwm_2": self.pwm_2,
-            "pwm_3": self.pwm_3,
-            "pwm_4": self.pwm_4,
-            "scope_1": self.scope_1,
-            "scope_2": self.scope_2,
-            "sync": self.sync
-        }
+        if name in io:
+            return io[name]
+        return object.__getattribute__(self, name)
 
-      
+    def reset(self):
+        for io in self._io_dict.values():
+            io.reset()
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._preallocation_len = PREALLOCATION_BLOCK_LEN
-     
+
+      
     def _has_changed(self):
         return any(io._has_changed() for io in self._io_dict.values())  
     
@@ -94,6 +82,13 @@ class IoSyncFrame:
 
                 #Create dictionaries for iteration variables
                 idx_dict = {}
+                t_dict = {}
+                for io_name in self._io_dict.keys():
+                    idx_dict[io_name] = 0
+                    t_dict[io_name] = 0
+                
+                #Iterate over 
+
                 
 
 
