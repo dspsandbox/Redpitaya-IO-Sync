@@ -1,5 +1,5 @@
 __all__ = [
     "devices",
-    "trigger",
-    "sequencer",
+    "frame",
+    "sequence",
 ]

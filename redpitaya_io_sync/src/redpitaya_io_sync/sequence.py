@@ -1,5 +1,5 @@
 import numpy as np
-from frame import IoSyncFrame
+from .frame import IoSyncFrame
 
 
 class IoSequence():

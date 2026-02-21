@@ -5,13 +5,13 @@ class DigitalIoCmd:
     TRISTATE = 0x1
 
 class DigitalIo(BaseIo):
-    def __init__(self, addr):
-        super().__init__(addr)
+    def __init__(self, addr, clk_freq):
+        super().__init__(addr, clk_freq)
 
-    def output(self, t: int, val: int, mask: int = 0xffffffff):
-        self._add_instruction(cmd=DigitalIoCmd.OUTPUT, t=t, data=val, mask=mask)
+    def output(self, val: int, mask: int = 0xffff):
+        self._add_instruction(cmd=DigitalIoCmd.OUTPUT,  data=((mask << 16) | val))
         
-    def tristate(self, t: int, val: int, mask: int = 0xffffffff):
-        self._add_instruction(cmd=DigitalIoCmd.TRISTATE, t=t, data=val, mask=mask)
+    def tristate(self, val: int, mask: int = 0xffff):
+        self._add_instruction(cmd=DigitalIoCmd.TRISTATE, data=((mask << 16) | val))
 
     

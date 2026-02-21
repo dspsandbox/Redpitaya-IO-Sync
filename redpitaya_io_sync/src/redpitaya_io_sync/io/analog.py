@@ -9,32 +9,32 @@ class AnalogCmd:
     AMPL = 0x3
 
 class AnalogBase(BaseIo):
-    def __init__(self, addr):
-        super().__init__(addr)
+    def __init__(self, addr, clk_freq):
+        super().__init__(addr, clk_freq)
 
-    def frequency(self, t: int, val: int, update: bool = True):
-        FREQ_MIN = -CLK_FREQ / 2
-        FREQ_MAX = CLK_FREQ / 2
+    def frequency(self, val: int, update: bool = True):
+        FREQ_MIN = -self._clk_freq / 2
+        FREQ_MAX = self._clk_freq / 2
         if (val < FREQ_MIN) or (val > FREQ_MAX):
             raise Exception(f"Frequency value {val} is out of range [{FREQ_MIN}, {FREQ_MAX}].")
-        data = int(val / CLK_FREQ * (1 << 31)) | (int(update) << 31)
-        self.add_instruction(cmd=AnalogCmd.FREQ, t=t, data=data)
+        data = int(val / self._clk_freq * (1 << 31)) | (int(update) << 31)
+        self._add_instruction(cmd=AnalogCmd.FREQ, data=data)
 
-    def phase(self, t: int, val: int, update: bool = True):
+    def phase(self, val: int, update: bool = True):
         data = int((val % 360) / 360 * (1 << 31)) | (int(update) << 31)
-        self._add_instruction(cmd=AnalogCmd.PHASE, t=t, data=data)
+        self._add_instruction(cmd=AnalogCmd.PHASE,  data=data)
     
-    def amplitude(self, t: int, val: int, update: bool = True):
+    def amplitude(self, val: int, update: bool = True):
         AMPL_MIN = -1
         AMPL_MAX = 1
         if (val < AMPL_MIN) or (val > AMPL_MAX):
             raise Exception(f"Amplitude value {val} is out of range [{AMPL_MIN}, {AMPL_MAX}].")
         data = int(val * ((1 << 15) - 1)) | (int(update) << 31)
-        self._add_instruction(cmd=AnalogCmd.AMPL, t=t, data=data)
+        self._add_instruction(cmd=AnalogCmd.AMPL, data=data)
 
-    def phase_reset(self, t: int, update: bool = True):
+    def phase_reset(self, update: bool = True):
         data = int(update) << 31
-        self._add_instruction(cmd=AnalogCmd.PHASE_RST, t=t, data=data)
+        self._add_instruction(cmd=AnalogCmd.PHASE_RST, data=data)
 
 
 class AnalogOut(AnalogBase):

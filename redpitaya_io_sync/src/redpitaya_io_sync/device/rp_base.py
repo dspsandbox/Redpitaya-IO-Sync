@@ -1,18 +1,31 @@
+from zynq_tcp_ctrl import ZynqTcpCtrlClient
+import time
 
 
-class Rp_125_14_Mock():
+
+class Rp_base():
     def __init__(self, ip: str, label: str):
         self._ip = ip
         self._label = label
-    
+        self._check_attribute("_clk_freq")
+        self._check_attribute("_io_dict")
+        self._check_attribute("_mmap_range_dict")
+        self._check_attribute("_addr_dict")
+        self._check_attribute("_bitstream")
 
-        self._instr_ptr = 0
+        self._instr_ptr = self._addr_dict["dma_instr"]["addr"]
         self._frame_label_list = []
-        self._en = 0
+        self._tcp_ctrl_client = ZynqTcpCtrlClient(self.ip)
+        self.upload_bitstream(force=False)
+        self.stop()
+
+
+    def _check_attribute(self, attr):
+        if not hasattr(self, attr):
+            raise Exception(f"Attribute {attr} not found. Please define {attr} in the device subclass.")
 
     def upload_bitstream(self, force=False):
-        pass
-    
+        self._tcp_ctrl_client.upload_bitstream(bitstream_path=self._bitstream, force=force)
         
     def reset(self):
         self.stop()
@@ -26,6 +39,7 @@ class Rp_125_14_Mock():
         instr_list_bytes = instr_list.tobytes()
         if self._instr_ptr + len(instr_list_bytes) > self._addr_dict["dma_instr"]["addr"] + self._addr_dict["dma_instr"]["size"]:
             raise Exception(f"Instruction list exceeds instruction memory size of {self._addr_dict['dma_instr']['size']} bytes.")
+        self._tcp_ctrl_client.write(addr=self._instr_ptr, data=instr_list_bytes)
         self._instr_ptr += len(instr_list_bytes)
         self._frame_label_list.append(label)
         
@@ -45,11 +59,10 @@ class Rp_125_14_Mock():
         
 
     def get_status(self):
-        en = self._en
-        sync_counter = self._en * (len(self._frame_label_list) - 1)
-
-        err_code = 0
-        done_code = self.en * 0xffffffff
+        en = bool(self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_en"], size=4))
+        sync_counter = self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_sync_counter"], size=4)
+        err_code = bool(self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_err"], size=4))
+        done_code = bool(self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_done"], size=4))
         
         frame_label = self._frame_label_list[sync_counter] if sync_counter < len(self._frame_label_list) else None
         io_status = {}
@@ -61,16 +74,16 @@ class Rp_125_14_Mock():
 
         err = any(io_status[io_name]["error"] for io_name in io_status.keys())
         if len(self._frame_label_list) == 0:
-            finished = False
+            completed = False
         else:
-            finished = ((frame_label == self._frame_label_list[-1]) and 
+            completed = ((frame_label == self._frame_label_list[-1]) and 
                         all(io_status[io_name]["done"] for io_name in io_status.keys()) and 
                         not any(io_status[io_name]["error"] for io_name in io_status.keys()))
         status = {
             "enabled": en,
-            "finished": finished,
+            "completed": completed,
             "error": err,
-            "frame": frame_label,
+            "current_frame": frame_label,
             "io": io_status
         }
         return status
@@ -82,19 +95,27 @@ class Rp_125_14_Mock():
         pass
         
         status = self.get_status()
-        if status["enabled"] and not status["finished"]:
+        if status["enabled"] and not status["completed"]:
             raise Exception("Device is already running. Please stop the device before starting it again.")
              
-        self._en = 1
+        
+        #configure DMAs
+        #assert enable bit
 
+        
 
     def stop(self):
-        self._en = 0
+        #reset DMAs
+        #deassert enable bit
+        #flush fifos
+        return
+
+
 
     
     def get_uid(self):
-        uid = f"{self.label}@{self.ip}"
+        uid = f"{self._label}@{self._ip}"
         return uid
 
-    
 
+    

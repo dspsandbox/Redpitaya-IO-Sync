@@ -1,35 +1,40 @@
-from zynq_tcp_ctrl import ZynqTcpCtrlClient
-import time
+from ..io.analog import AnalogIn, AnalogOut
+from ..io.digital import DigitalIo
+from ..io.pwm import Pwm
+from ..io.scope import Scope
+from ..io.sync import Sync 
 
-
-
-class Rp_base():
+class Rp_125_14_Mock():
     def __init__(self, ip: str, label: str):
         self._ip = ip
         self._label = label
-        self._check_attribute("_clk_freq")
-        self._check_attribute("_io_dict")
-        self._check_attribute("_mmap_range_dict")
-        self._check_attribute("_addr_dict")
-        self._check_attribute("_bitstream")
-
-        self._instr_ptr = self._addr_dict["dma_instr"]["addr"]
+        self._clk_freq = 125e6
+        self._io_dict = {
+            "analog_out_1": {"class": AnalogOut, "addr": 0x0},
+            "analog_out_2": {"class": AnalogOut, "addr": 0x1},
+            "analog_in_1": {"class": AnalogIn, "addr": 0x2},
+            "analog_in_2": {"class": AnalogIn, "addr": 0x3},
+            "digital_io_1": {"class": DigitalIo, "addr": 0x4},
+            "digital_io_2": {"class": DigitalIo, "addr": 0x5},
+            "pwm_1": {"class": Pwm, "addr": 0x6},
+            "pwm_2": {"class": Pwm, "addr": 0x7},
+            "pwm_3": {"class": Pwm, "addr": 0x8},
+            "pwm_4": {"class": Pwm, "addr": 0x9},
+            "scope_1": {"class": Scope, "addr": 0xA},    
+            "scope_2": {"class": Scope, "addr": 0xB},
+            "_sync": {"class": Sync, "addr": 0xC}
+        }
+        self._instr_ptr = 0
         self._frame_label_list = []
-        self._tcp_ctrl_client = ZynqTcpCtrlClient(self.ip)
-        self.upload_bitstream(force=False)
-        self.stop()
-
-
-    def _check_attribute(self, attr):
-        if not hasattr(self, attr):
-            raise Exception(f"Attribute {attr} not found. Please define {attr} in the device subclass.")
+        self._en = 0
 
     def upload_bitstream(self, force=False):
-        self._tcp_ctrl_client.upload_bitstream(bitstream_path=self._bitstream, force=force)
+        pass
+    
         
     def reset(self):
         self.stop()
-        self._instr_ptr = self._addr_dict["dma_instr"]["addr"]
+        self._instr_ptr = 0
         self._frame_label_list = []
     
     
@@ -37,9 +42,8 @@ class Rp_base():
     def add_frame(self, frame, label):
         instr_list = frame._get_instruction_list()
         instr_list_bytes = instr_list.tobytes()
-        if self._instr_ptr + len(instr_list_bytes) > self._addr_dict["dma_instr"]["addr"] + self._addr_dict["dma_instr"]["size"]:
-            raise Exception(f"Instruction list exceeds instruction memory size of {self._addr_dict['dma_instr']['size']} bytes.")
-        self._tcp_ctrl_client.write(addr=self._instr_ptr, data=instr_list_bytes)
+        if self._instr_ptr + len(instr_list_bytes) > 0x10_0000:
+            raise Exception(f"Instruction list exceeds instruction memory size of {0x10_0000} bytes.")
         self._instr_ptr += len(instr_list_bytes)
         self._frame_label_list.append(label)
         
@@ -59,10 +63,11 @@ class Rp_base():
         
 
     def get_status(self):
-        en = bool(self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_en"], size=4))
-        sync_counter = self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_sync_counter"], size=4)
-        err_code = bool(self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_err"], size=4))
-        done_code = bool(self._tcp_ctrl_client.read(addr=self._addr_dict["reg_bank_done"], size=4))
+        en = bool(self._en)
+        sync_counter = en * (len(self._frame_label_list) - 1)
+
+        err_code = 0
+        done_code = en * 0xffffffff
         
         frame_label = self._frame_label_list[sync_counter] if sync_counter < len(self._frame_label_list) else None
         io_status = {}
@@ -74,16 +79,16 @@ class Rp_base():
 
         err = any(io_status[io_name]["error"] for io_name in io_status.keys())
         if len(self._frame_label_list) == 0:
-            finished = False
+            completed = False
         else:
-            finished = ((frame_label == self._frame_label_list[-1]) and 
+            completed = ((frame_label == self._frame_label_list[-1]) and 
                         all(io_status[io_name]["done"] for io_name in io_status.keys()) and 
                         not any(io_status[io_name]["error"] for io_name in io_status.keys()))
         status = {
             "enabled": en,
-            "finished": finished,
+            "completed": completed,
             "error": err,
-            "frame": frame_label,
+            "current_frame": frame_label,
             "io": io_status
         }
         return status
@@ -95,26 +100,19 @@ class Rp_base():
         pass
         
         status = self.get_status()
-        if status["enabled"] and not status["finished"]:
+        if status["enabled"] and not status["completed"]:
             raise Exception("Device is already running. Please stop the device before starting it again.")
              
-        
-        #configure DMAs
-        #assert enable bit
+        self._en = 1
 
-        
 
     def stop(self):
-        #reset DMAs
-        #deassert enable bit
-        #flush fifos
-        return
-
-
+        self._en = 0
 
     
     def get_uid(self):
-        uid = f"{self.label}@{self.ip}"
+        uid = f"{self._label}@{self._ip}"
         return uid
 
     
+

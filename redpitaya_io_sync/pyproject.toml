@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "redpitaya_io_sync"
 version = "0.1.0"
 description = "RedPitaya IO Sync Sequencer"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 dependencies = []
 
 [tool.setuptools]

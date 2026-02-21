@@ -1,4 +1,3 @@
-from enum import Enum
 from .base import BaseIo
 import numpy as np
 
@@ -12,35 +11,35 @@ class ScopeSource:
     ANALOG_IN_2 = 0x1
     ANALOG_OUT_1 = 0x2
     ANALOG_OUT_2 = 0x3
-    DIGITAL_IN = 0x4
-    DIGITAL_OUT = 0x5
-    DIGITAL_TRI = 0x6
-    PWM_1 = 0x7
-    PWM_2 = 0x8
-    PWM_3 = 0x9
-    PWM_4 = 0xA
-    XADC_1 = 0xB
-    XADC_2 = 0xC
-    XADC_3 = 0xD
-    XADC_4 = 0xE
+    DIGITAL_IO_1 = 0x4
+    DIGITAL_IO_2 = 0x5
+    PWM_1 = 0x6
+    PWM_2 = 0x7
+    PWM_3 = 0x8
+    PWM_4 = 0x9
+    XADC_1 = 0xA
+    XADC_2 = 0xB
+    XADC_3 = 0xC
+    XADC_4 = 0xD
     
 
 class Scope(BaseIo):
-    def __init__(self, addr):
-        super().__init__(addr)
+    def __init__(self, addr, clk_freq):
+        super().__init__(addr, clk_freq)
         self._acq_dict = {}
+        self._idx_tlast = None
 
     def reset(self):
         super().reset()
         self._acq_dict = {}
 
-    def source(self, t: int, src: ScopeSource):
+    def source(self, src: ScopeSource):
         if src not in ScopeSource.__dict__.values():
             raise Exception(f"Scope source {src} is not valid.")
-        self.add_instruction(t=t, cmd=ScopeCmd.SRC, data=src)
+        self._add_instruction(cmd=ScopeCmd.SRC, data=src)
 
 
-    def acquire(self, t: int, samples: int, dec: int = 1, label: str | None = None):
+    def acquire(self, samples: int, dec: int = 1, label: str | None = None):
         #Check Scope parameters
         SAMPLE_MIN = 1
         SAMPLE_MAX = 1 << 24 
@@ -57,8 +56,8 @@ class Scope(BaseIo):
         #Determine command type and Scope time window
         cmd = ScopeCmd.ACQ
         dec_pow_2 = int(np.log2(dec))
-        acq_t_start = t
-        acq_t_end = t + samples * dec
+        acq_t_start = self._tnext
+        acq_t_end = acq_t_start + samples * dec
         
         #Check for overlapping Scopes
         for _acq_label in self._acq_dict.keys():
@@ -70,15 +69,15 @@ class Scope(BaseIo):
 
         #Generate default label if none provided
         if label is None:
-            label = f"acq_t{t}"
+            label = f"acq_t{acq_t_start}"
         
         #Check for duplicate labels
         if label in self._acq_dict:
             raise Exception(f"Acquisition label '{label}' already exists.")
         
         #Add Scope instruction
-        self._add_instruction(cmd=cmd, t=t, data=((dec_pow_2 << 24) | samples), mask=0xffffffff)
-        self._acq_dict[label] = {'t': t, 'samples': samples, 'dec': dec}
+        self._add_instruction(cmd=cmd, data=((dec_pow_2 << 24) | samples), duration=samples * dec)
+        self._acq_dict[label] = {'t': acq_t_start, 'samples': samples, 'dec': dec}
 
     def _acquire_tlast(self):
         samples = 1
@@ -87,7 +86,7 @@ class Scope(BaseIo):
             _acq_t_end = self._acq_dict[_acq_label]['t'] + self._acq_dict[_acq_label]['samples'] * self._acq_dict[_acq_label]['dec'] 
         t = max(t, _acq_t_end)
 
-        self._add_instruction(cmd=ScopeCmd.ACQ_TLAST, t=t, data=samples, mask=0xffffffff)
+        self._add_instruction(cmd=ScopeCmd.ACQ_TLAST, data=samples, duration=1)
         
     def _get_acquisition_dict(self):
         return self._acq_dict

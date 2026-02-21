@@ -13,18 +13,18 @@ class TriggerSource:
 from .base import BaseIo
 
 class Sync (BaseIo):
-    def __init__(self, addr): 
-        super().__init__(addr)
+    def __init__(self, addr, clk_freq):
+        super().__init__(addr, clk_freq)
 
     def trigger(self, src: int, timeout: int = 0):
         TIMEOUT_MIN = 0
-        TIMEOUT_MAX = (1 << (32 + 24)) - 1
+        TIMEOUT_MAX = (1 << 32) - 1
         if src not in TriggerSource.__dict__.values(): 
             raise Exception(f"Trigger source {src} is not valid.")
+        if timeout is None:
+            timeout = TIMEOUT_MAX
         if not (TIMEOUT_MIN <= timeout <= TIMEOUT_MAX):
             raise Exception(f"Timeout {timeout} is out of range ({TIMEOUT_MIN}-{TIMEOUT_MAX}).")
 
-        timeout_high = (timeout >> 32) & 0xffffff
-        timeout_low = timeout & 0xffffffff
-        self._add_instruction(cmd=src, t=timeout_high, data=timeout_low)
+        self._add_instruction(cmd=src, data=timeout)
 
