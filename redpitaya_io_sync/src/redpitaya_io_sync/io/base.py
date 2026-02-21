@@ -43,10 +43,6 @@ class BaseIo():
         if (cmd != BaseIoCmd.NOP) and (t < self._tnext):
             raise Exception(f"Instruction time {t} is smaller than current time {self._tnext}.")
 
-        elif (cmd == BaseIoCmd.NOP) and (t <= self._tlast):
-            raise Exception(f"NOP instruction time {t} is smaller or equal than last instruction time {self._tlast}.")
-        
-
         #Insert NOP instructions every 2^24 clk cycles (if needed)
         while (t - self._tlast) > (1<<24):
             self._tnext = self._tlast + (1 << 24)
