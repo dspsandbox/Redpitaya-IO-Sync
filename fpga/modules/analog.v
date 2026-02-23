@@ -1,4 +1,7 @@
 module analog #(
+    parameter AMPL_DEFAULT = 0,
+    parameter PHASE_OFF_DEFAULT = 0,
+    parameter PHASE_INCR_DEFAULT = 0,
     localparam AMPL_WIDTH = 16,
     localparam PHASE_WIDTH = 32,
     localparam INSTR_CMD_WIDTH = 4,
@@ -31,10 +34,10 @@ module analog #(
     //Update internal registers based on instruction
     always @(posedge clk) begin
         if resetn == 0 begin
-            ph_off_reg <= 0;
+            ph_off_reg <= PHASE_OFF_DEFAULT;
             ph_rst_reg <= 0;
-            ph_inc_reg <= 0;
-            ampl_reg <= 0;
+            ph_inc_reg <= PHASE_INCR_DEFAULT;
+            ampl_reg <= AMPL_DEFAULT;
             update_reg <= 0;
         end else begin
             if ((en == 1) && (instr_valid == 1)) begin
@@ -91,9 +94,9 @@ module analog #(
     //Transfer from internal registers to output when UPDATE=1
     always @(posedge clk) begin
         if(resetn==0) begin
-            ampl <= 0;
-            ph_off <= 0;
-            ph_inc <= 0;
+            ampl <= AMPL_DEFAULT;
+            ph_off <= PHASE_OFF_DEFAULT;
+            ph_inc <= PHASE_INCR_DEFAULT;
             ph_rst <= 0;
             
         end else begin
