@@ -10,6 +10,8 @@ class BaseIoCmd:
 PREALLOCATION_BLOCK_LEN = 0x1000
 
 class BaseIo():
+    _requires_done_instruction = True #Whether the IO requires a DONE instruction at the end of the instruction list
+
     def __init__(self, addr, clk_freq):
         self._addr = addr
         self._clk_freq = clk_freq
@@ -19,7 +21,6 @@ class BaseIo():
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
         self._preallocation_len = PREALLOCATION_BLOCK_LEN
-        self._sorted = True
         self._locked = False
     
     
@@ -30,9 +31,7 @@ class BaseIo():
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
         self._preallocation_len = PREALLOCATION_BLOCK_LEN
-        self._sorted = True
         self._locked = False
-
 
     def _add_instruction(self, cmd: int, data: int, duration: int = 1):
         #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
@@ -66,24 +65,18 @@ class BaseIo():
         self._tnext = t + duration
         self._locked = False
         return 
-       
 
             
     def _get_instruction_and_time_list(self):
-        #Sort instructions if not already sorted
-        if not self._sorted:
-            idx_sorted = np.argsort(self._t_list[:self._idx])
-            self._t_list[:self._idx] = self._t_list[idx_sorted]
-            self._instr_list[:self._idx] = self._instr_list[idx_sorted]
-            self._sorted = True
-
+        
         #Backup iteration variables
         idx = self._idx
         tlast = self._tlast
         tnext = self._tnext
 
-        #Add DONE instruction at the end of the instruction list 
-        self._add_instruction(cmd=BaseIoCmd.DONE, data=0)
+        #Add DONE instruction at the end of the instruction list if required
+        if self._requires_done_instruction:
+            self._add_instruction(cmd=BaseIoCmd.DONE, data=0)
         instr_list = self._instr_list[:self._idx]
         t_list = self._t_list[:self._idx]
 
@@ -94,6 +87,7 @@ class BaseIo():
 
         #Set lock
         self._locked = True
+
 
         return instr_list, t_list
     
@@ -112,10 +106,9 @@ class BaseIo():
         t = self.get_time()
         self.set_time(t + val)
 
-
     def _is_locked(self):
         return self._locked
-
+    
 
 
 

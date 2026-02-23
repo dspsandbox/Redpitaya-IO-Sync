@@ -12,19 +12,21 @@ class Rp_125_14_Z7010(Rp_base):
         self._io_dict = {
             "analog_out_1": {"class": AnalogOut, "addr": 0x0},
             "analog_out_2": {"class": AnalogOut, "addr": 0x1},
-            "analog_in_1": {"class": AnalogIn, "addr": 0x2},
-            "analog_in_2": {"class": AnalogIn, "addr": 0x3},
+            #"analog_in_1": {"class": AnalogIn, "addr": 0x2}, #TODO: Implement configurable analog input 1
+            #"analog_in_2": {"class": AnalogIn, "addr": 0x3}, #TODO: Implement configurable analog input 2
             "digital_io_1": {"class": DigitalIo, "addr": 0x4},
             "digital_io_2": {"class": DigitalIo, "addr": 0x5},
-            "pwm_1": {"class": Pwm, "addr": 0x6},
-            "pwm_2": {"class": Pwm, "addr": 0x7},
-            "pwm_3": {"class": Pwm, "addr": 0x8},
-            "pwm_4": {"class": Pwm, "addr": 0x9},
-            "scope_1": {"class": Scope, "addr": 0xA},    
-            "scope_2": {"class": Scope, "addr": 0xB},
-            "_sync": {"class": Sync, "addr": 0xC}
+            "digital_io_3": {"class": DigitalIo, "addr": 0x6},
+            "digital_io_4": {"class": DigitalIo, "addr": 0x7},
+            "pwm_1": {"class": Pwm, "addr": 0x8},
+            "pwm_2": {"class": Pwm, "addr": 0x9},
+            "pwm_3": {"class": Pwm, "addr": 0xA},
+            "pwm_4": {"class": Pwm, "addr": 0xB},
+            "scope_1": {"class": Scope, "addr": 0xC},    
+            "scope_2": {"class": Scope, "addr": 0xD},
+            "_sync": {"class": Sync, "addr": 0xE}
         }
-        self._mmap_range_dict = {
+        self._mmap_dict = {
             "pl" : {"addr": 0x4000_0000, "size": 0x0010_0000},
             "mem_instr" : {"addr": 0x0100_0000, "size": 0x0100_0000},
             "mem_scope_1" : {"addr": 0x0200_0000, "size": 0x0050_0000},
@@ -41,5 +43,5 @@ class Rp_125_14_Z7010(Rp_base):
             "dma_scope_0" : 0x4002_0000,
             "dma_scope_1" : 0x4003_0000
         }
-        self._bitstream = os.path.join(os.path.dirname(__file__), "bitstream/io_sync_rp_125_14_z7010.bit")
+        self._bitstream = os.path.join(os.path.dirname(__file__), "../bitstream/io_sync_rp_125_14_z7010.bit")
         super().__init__(ip, label)

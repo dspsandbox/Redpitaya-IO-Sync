@@ -13,6 +13,8 @@ class TriggerSource:
 from .base import BaseIo
 
 class Sync (BaseIo):
+    _requires_done_instruction = False
+
     def __init__(self, addr, clk_freq):
         super().__init__(addr, clk_freq)
 

@@ -102,16 +102,25 @@ class IoSyncFrame:
           
                 
     def get_time(self):
-        return max(io.get_time() for io in self._io_dict.values())
+        return max(io.get_time() for io_name, io in self._io_dict.items() if not io_name.startswith("_"))
 
 
     def set_time(self, val : int):
-        for io in self._io_dict.values():
-            io.set_time(val)
+        for io_name, io in self._io_dict.items():
+            if not io_name.startswith("_"):
+                io.set_time(val)
 
     def wait(self, val : int = 0):
         t = self.get_time()
         self.set_time(t + val)
+
+
+    def _get_acquisition_dict(self):
+        acq_dict = {}
+        for io_name in self._io_dict.keys():
+            if "scope" in io_name:
+                acq_dict[io_name] = self._io_dict[io_name]._get_acquisition_dict()
+        return acq_dict
 
 
 
