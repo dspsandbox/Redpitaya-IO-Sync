@@ -51,7 +51,7 @@ module scope#(
     output reg scope_tvalid
 );
 
-
+    //instruction commands
     localparam CMD_SRC = 'h0, CMD_ACQ = 'h1;
     reg [COUNTER_WIDTH-1:0] counter;
     reg [COUNTER_WIDTH-1:0] counter_max;

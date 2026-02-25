@@ -28,7 +28,7 @@ module analog #(
     reg update_reg;
     
     
-    //cmd format
+    //instruction commands
     localparam CMD_PH = 'h0, CMD_PH_RST = 'h1, CMD_FREQ = 'h2, CMD_AMPL = 'h3;
 
     //Update internal registers based on instruction

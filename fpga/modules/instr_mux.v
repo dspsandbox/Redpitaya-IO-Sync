@@ -1,7 +1,7 @@
 module instr_mux #(
     localparam INSTR_WIDTH = 64,
-    localparam ADDR_LSB = 60,
-    localparam ADDR_MSB = 63
+    localparam INSTR_ADDR_LSB = 60,
+    localparam INSTR_ADDR_MSB = 63
 ) (
     input clk,
     input resetn,
@@ -76,8 +76,8 @@ module instr_mux #(
 );
 
 
-    wire [ADDR_MSB-ADDR_LSB:0] addr;
-    assign addr = S00_AXIS_tdata[ADDR_MSB:ADDR_LSB];
+    wire [INSTR_ADDR_MSB-INSTR_ADDR_LSB:0] addr;
+    assign addr = S00_AXIS_tdata[INSTR_ADDR_MSB:INSTR_ADDR_LSB];
     
     assign M00_AXIS_tdata = S00_AXIS_tdata;
     assign M00_AXIS_tvalid = S00_AXIS_tvalid && (addr == 0);

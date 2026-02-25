@@ -1,5 +1,5 @@
-module pwm #(
-    parameter DUTY_CYCLE_WIDTH = 8,
+module led #(
+    parameter LED_WIDTH = 8,
     localparam INSTR_CMD_WIDTH = 4,
     localparam INSTR_DATA_WIDTH = 32
     
@@ -10,26 +10,34 @@ module pwm #(
     input instr_valid,
     input [INSTR_CMD_WIDTH-1:0] instr_cmd,
     input [INSTR_DATA_WIDTH-1:0] instr_data,
-    output reg [DUTY_CYCLE_WIDTH-1:0] duty_cycle
+    output reg [LED_WIDTH-1:0] led_o
+
 );
     //instruction commands
-    localparam CMD_DUTY_CYCLE = 'h0;
+    localparam CMD_WRITE = 'h0;
+
+    wire [LED_WIDTH-1:0] val;
+    wire [LED_WIDTH-1:0] mask;
+
+    assign val = instr_data[VAL_OFFSET + LED_WIDTH - 1 : VAL_OFFSET];
+    assign mask = instr_data[MASK_OFFSET + LED_WIDTH - 1 : MASK_OFFSET];
 
     always @(posedge clk) begin
         if(resetn==0) begin
-            duty_cycle <= 0;
+            led_o <= 0;
         end else begin
             if ((en == 1) && (instr_valid==1)) begin
                 case(instr_cmd)
-                    CMD_DUTY_CYCLE: begin
-                        duty_cycle <= instr_data[DUTY_CYCLE_WIDTH-1:0];
+                    CMD_WRITE: begin
+                        led_o <= (led_o & ~mask) | (val & mask);
                     end
+    
                     default: begin
-                        duty_cycle <= duty_cycle;
+                        led_o <= led_o;
                     end
                 endcase
             end else begin
-                duty_cycle <= duty_cycle;
+                led_o <= led_o;
             end
         end
     end

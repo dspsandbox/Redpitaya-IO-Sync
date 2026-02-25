@@ -1,12 +1,10 @@
 module instr_breakout#(
     localparam INSTR_WIDTH = 64,
-    localparam ADDR_LSB = 60,
-    localparam ADDR_MSB = 63,
     localparam INSTR_CMD_LSB = 56,
     localparam INSTR_CMD_MSB = 59,
     localparam INSTR_TIME_LSB = 32,
     localparam INSTR_TIME_MSB = 55,
-    localparam DATA_LSB = 0,
+    localparam INSTR_DATA_LSB = 0,
     localparam INSTR_DATA_MSB = 31
 ) (
     input clk,
@@ -24,8 +22,8 @@ module instr_breakout#(
     
     output done,
     output reg instr_valid,
-    output reg [CMD_MSB-INSTR_CMD_LSB:0] instr_cmd,
-    output reg [INSTR_DATA_MSB-DATA_LSB:0] instr_data
+    output reg [INSTR_CMD_MSB-INSTR_CMD_LSB:0] instr_cmd,
+    output reg [INSTR_DATA_MSB-INSTR_DATA_LSB:0] instr_data
 );
     //instruction format
     localparam CMD_DONE = 'hE, CMD_NOP = 'hF;
@@ -33,11 +31,11 @@ module instr_breakout#(
     //fsm states
     localparam IDLE = 0, RUNNING = 1, ERROR = 2
     reg [1:0] state;
-    
+
     //extract fields from instruction
     wire [INSTR_CMD_MSB-INSTR_CMD_LSB:0] cmd_i;
     wire [INSTR_TIME_MSB-INSTR_TIME_LSB:0] time_i;
-    wire [INSTR_DATA_MSB-DATA_LSB:0] data_i;
+    wire [INSTR_DATA_MSB-INSTR_DATA_LSB:0] data_i;
     assign cmd_i = S00_AXIS_tdata[INSTR_CMD_MSB:INSTR_CMD_LSB];
     assign time_i = S00_AXIS_tdata[INSTR_TIME_MSB:INSTR_TIME_LSB];
     assign data_i = S00_AXIS_tdata[INSTR_DATA_MSB:DATA_LSB];
@@ -55,6 +53,7 @@ module instr_breakout#(
             instr_cmd <= 0;
             instr_data <= 0;
         end else begin
+            trig_old <= trig;
             case(state)
                 IDLE: begin
                     instr_valid <= 0;
@@ -64,6 +63,7 @@ module instr_breakout#(
                         state <= IDLE;
                     end
                 end
+
                 RUNNING: begin
                     if (en == 0) begin
                         state <= IDLE;
