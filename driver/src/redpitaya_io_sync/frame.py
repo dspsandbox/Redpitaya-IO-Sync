@@ -5,16 +5,19 @@ from .io.sync import TriggerSource
 PREALLOCATION_BLOCK_LEN = 0x10000
 
 class IoSyncFrame:
-    def __init__(self, device, trig=TriggerSource.TrigImmediate, timeout=None):
+    def __init__(self, device, trig: int | None = None):
+        if trig is None:
+            trig = TriggerSource.NONE
+        if trig not in TriggerSource.__dict__.values():
+            raise Exception(f"Trigger source {trig} is not valid. Valid sources are: {list(TriggerSource.__dict__.values())}.")
         self._device = device
         self._trig = trig
-        self._timeout = timeout
         self._io_dict = {}
         self._idx = 0
-        for io_name in self._device._io_dict.keys():
-            io_class = self._device._io_dict[io_name]["class"]
-            io_addr = self._device._io_dict[io_name]["addr"]
-            clk_freq = self._device._clk_freq
+        for io_name in self._device.IO_DICT.keys():
+            io_class = self._device.IO_DICT[io_name]["class"]
+            io_addr = self._device.IO_DICT[io_name]["addr"]
+            clk_freq = self._device.CLK_FREQ
             self._io_dict[io_name] = io_class(addr=io_addr, clk_freq=clk_freq)
         self._set_sync()
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
@@ -44,7 +47,7 @@ class IoSyncFrame:
         self._idx = 0
 
     def _set_sync(self):
-        self._io_dict["_sync"].trigger(src=self._trig, timeout=self._timeout)
+        self._io_dict["_sync"].trigger(src=self._trig)
 
     def _is_locked(self):
         return all(io._is_locked() for io in self._io_dict.values())  

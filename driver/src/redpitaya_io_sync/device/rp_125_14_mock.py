@@ -1,7 +1,7 @@
 import numpy as np
 from .rp_125_14_z7010 import Rp_125_14_Z7010
 
-np.random.seed(0)
+np.random.seed(2)
 
 class Rp_125_14_Mock(Rp_125_14_Z7010):
     def __init__(self, ip: str, label: str):
@@ -15,9 +15,9 @@ class Rp_125_14_Mock(Rp_125_14_Z7010):
 
     def _read_mem(self, addr, dtype=np.uint32, size=1):
         if size == 1:
-            return np.random.randint(0, 2, dtype=dtype)
+            return 0
         else:
-            return np.random.randint(0, 2, size=size, dtype=dtype)
+            return np.zeros(size, dtype=dtype)
 
     def upload_bitstream(self, force=False):
         pass
