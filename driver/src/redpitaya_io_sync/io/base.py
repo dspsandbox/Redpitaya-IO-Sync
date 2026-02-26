@@ -34,6 +34,8 @@ class BaseIo():
         self._locked = False
 
     def _add_instruction(self, cmd: int, data: int, duration: int = 1):
+        if self._locked:
+            raise Exception("Cannot add instruction because the instruction list is locked. Please reset instruction list.")
         #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
         #Addr    |   Cmd   |   Time  |   Data
 
@@ -63,32 +65,21 @@ class BaseIo():
         self._idx += 1
         self._tlast = t
         self._tnext = t + duration
-        self._locked = False
         return 
 
             
     def _get_instruction_and_time_list(self):
         
-        #Backup iteration variables
-        idx = self._idx
-        tlast = self._tlast
-        tnext = self._tnext
+        if not self._locked:
+            #Add DONE instruction at the end of the instruction list if required
+            if self._requires_done_instruction:
+                self._add_instruction(cmd=BaseIoCmd.DONE, data=0)
+            
+            #Set lock
+            self._locked = True
 
-        #Add DONE instruction at the end of the instruction list if required
-        if self._requires_done_instruction:
-            self._add_instruction(cmd=BaseIoCmd.DONE, data=0)
         instr_list = self._instr_list[:self._idx]
         t_list = self._t_list[:self._idx]
-
-        #Restore iteration variables
-        self._idx = idx
-        self._tlast = tlast
-        self._tnext = tnext
-
-        #Set lock
-        self._locked = True
-
-
         return instr_list, t_list
     
     def _get_time_list(self):

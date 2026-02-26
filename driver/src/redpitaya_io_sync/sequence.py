@@ -1,6 +1,6 @@
 import numpy as np
 import copy
-from .frame import IoSyncFrame
+from .frame import IoSyncFrame, ParametrizedIoSyncFrame
 from .io.sync import TriggerSource
 from .device.rp_base import Rp_base
 
@@ -23,9 +23,8 @@ class IoSequence():
 
 
     def add_frame(self, frame, label=None, device=None):
-        if type(frame) is not IoSyncFrame:
-            raise Exception(f"Frame must be of type IoSyncFrame, got {type(frame)}.")       
-        
+        if (type(frame) is not IoSyncFrame) and (type(frame) is not ParametrizedIoSyncFrame):
+             raise Exception(f"Frame must be of type IoSyncFrame or ParametrizedIoSyncFrame, got {type(frame)}.")   
         if device is None and not isinstance(frame._device, Rp_base):
             raise Exception(f"Please provide a valid device instance or make sure the device attribute of the frame is a valid device instance.")
         if device is not None and not isinstance(device, Rp_base):
@@ -119,7 +118,8 @@ class IoSequence():
             
             description += "|"
             description += "\n"
-        description += "+" + ("-" * width_max + "+") * len(self._device_dict) 
+        description += "+" + ("-" * width_max + "+") * len(self._device_dict) + "\n"
+        description += "NOTE: Frames with (*) are triggered by external trigger source.\n"
         
         return description
 
@@ -151,3 +151,4 @@ class IoSequence():
         for device_uid, device in self._device_dict.items():
             scope_dict[device_uid] = device._get_scope()
         return scope_dict     
+    

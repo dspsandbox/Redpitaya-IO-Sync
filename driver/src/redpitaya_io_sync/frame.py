@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 from .io.sync import TriggerSource
 
 
@@ -128,11 +129,42 @@ class IoSyncFrame:
 
 
 
+class ParametrizedIoSyncFrame():
+    def __init__(self, device, trig: int | None = None):
+        if trig is None:
+            trig = TriggerSource.NONE
+        if trig not in TriggerSource.__dict__.values():
+            raise Exception(f"Trigger source {trig} is not valid. Valid sources are: {list(TriggerSource.__dict__.values())}.")
+        self._device = device
+        self._trig = trig
+        self._frame = IoSyncFrame(device=device, trig=trig)
+        self._frame_param = {}
+        self._frame_param_last = {}
+        self._frame_func = None
 
-            
-            
+    def reset(self):
+        self._frame.reset()
+        self._frame_param = {}
+        self._frame_param_last = {}
+        self._frame_func = None
 
+    def set_frame_parameter(self, name, val):
+        self._frame_param[name] = val
 
+    def set_frame_function(self, func):
+        self._frame.reset()
+        self._frame_func = func
+
+    def _is_locked(self):
+        return self._frame._is_locked() and (self._frame_param == self._frame_param_last) and (self._frame_func is not None)
     
-
-
+    def _get_instruction_list(self):
+        if not self._is_locked():
+            self._frame.reset()
+            self._frame_func(self._frame, **copy.deepcopy(self._frame_param))
+            self._frame_param_last = copy.deepcopy(self._frame_param)
+        return self._frame._get_instruction_list()
+    
+    def _get_acquisition_dict(self):
+        return self._frame._get_acquisition_dict()
+    

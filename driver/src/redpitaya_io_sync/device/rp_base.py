@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from zynq_tcp_ctrl import ZynqTcpCtrlClient
-from ..frame import IoSyncFrame
+from ..frame import IoSyncFrame, ParametrizedIoSyncFrame
 
 
 
@@ -41,53 +41,55 @@ class Rp_base():
         self._tcp_ctrl_client.upload_bitstream(bitstream_path=self.BITSTREAM, force=force)
         
     def _reset(self):
-        self.stop()
+        self._stop()
         self._frame_dict = {}
         self._init_ptr()
     
 
     def _add_frame(self, frame, label=None):
-        if type(frame) != IoSyncFrame:
-            raise Exception(f"Frame must be of type IoSyncFrame. Got {type(frame)}.")
-
+        if (type(frame) is not IoSyncFrame) and (type(frame) is not ParametrizedIoSyncFrame):
+            raise Exception(f"Frame must be of type IoSyncFrame or ParametrizedIoSyncFrame. Got {type(frame)}.")
         if label is None:
             label = f"frame_{len(self._frame_dict)}"
-
-        instr_list = frame._get_instruction_list()
-        
-        #Check instruction memory size
-        instr_list_bytes = instr_list.tobytes()
-        instr_list_size = len(instr_list_bytes)
-        if self._ptr_dict["instr"] + instr_list_size > self.MMAP_DICT["mem_instr"]["addr"] + self.MMAP_DICT["mem_instr"]["size"]:
-            raise Exception(f"Frame exceeds total instruction memory size of {self.MMAP_DICT['mem_instr']['size']} bytes.")
-        
-        #Check scope memory size
-        acq_dict = frame._get_acquisition_dict()
-        for scope_label in acq_dict.keys():
-            for acq_label in acq_dict[scope_label].keys():
-                acq_samples = acq_dict[scope_label][acq_label]["samples"]
-                acq_size = acq_samples * np.int16().nbytes  
-                if (self._ptr_dict[scope_label] + acq_size) > (self.MMAP_DICT[f"mem_{scope_label}"]["addr"] + self.MMAP_DICT[f"mem_{scope_label}"]["size"]):
-                    raise Exception(f"Frame exceeds total {scope_label} memory size of {self.MMAP_DICT[f'mem_{scope_label}']['size']} bytes.")
-        
-        #Append frame
-        self._write_mem(addr=self._ptr_dict["instr"], data=instr_list_bytes)
-
-        #Append frame metadata
+        if label in self._frame_dict:
+            raise Exception(f"Frame label {label} already exists in device {self._get_uid()}. Please provide a unique label for each frame.")
         self._frame_dict[label] = frame
-        self._ptr_dict["instr"] += instr_list_size
-        for scope_label in acq_dict.keys():
-            for acq_label in acq_dict[scope_label].keys():
-                acq_dict[scope_label][acq_label]["addr"] = self._ptr_dict[scope_label]
-                self._ptr_dict[scope_label] += acq_dict[scope_label][acq_label]["samples"] * np.int16().nbytes 
+
+        
             
     def _upload(self, force=False):
         frame_dict = self._frame_dict
         if force or not all(frame._is_locked() for frame in self._frame_dict.values()):      
-            self.reset()
+            self._reset()
             for label in frame_dict.keys():
                 frame = frame_dict[label]
-                self.add_frame(frame=frame, label=label)
+                instr_list = frame._get_instruction_list()
+        
+                #Check instruction memory size
+                instr_list_bytes = instr_list.tobytes()
+                instr_list_size = len(instr_list_bytes)
+                if self._ptr_dict["instr"] + instr_list_size > self.MMAP_DICT["mem_instr"]["addr"] + self.MMAP_DICT["mem_instr"]["size"]:
+                    raise Exception(f"Frame {label} ({self._get_uid()}) exceeds available instruction memory ({self.MMAP_DICT['mem_instr']['size']} bytes).")
+                
+                #Check scope memory size
+                acq_dict = frame._get_acquisition_dict()
+                for scope_label in acq_dict.keys():
+                    for acq_label in acq_dict[scope_label].keys():
+                        acq_samples = acq_dict[scope_label][acq_label]["samples"]
+                        acq_size = acq_samples * np.int16().nbytes  
+                        if (self._ptr_dict[scope_label] + acq_size) > (self.MMAP_DICT[f"mem_{scope_label}"]["addr"] + self.MMAP_DICT[f"mem_{scope_label}"]["size"]):
+                            raise Exception(f"Frame {label} ({self._get_uid()}) exceeds available {scope_label} memory ({self.MMAP_DICT[f'mem_{scope_label}']['size']} bytes).")
+                
+                #Append frame
+                self._write_mem(addr=self._ptr_dict["instr"], data=instr_list_bytes)
+
+                #Append frame metadata
+                self._frame_dict[label] = frame
+                self._ptr_dict["instr"] += instr_list_size
+                for scope_label in acq_dict.keys():
+                    for acq_label in acq_dict[scope_label].keys():
+                        acq_dict[scope_label][acq_label]["addr"] = self._ptr_dict[scope_label]
+                        self._ptr_dict[scope_label] += acq_dict[scope_label][acq_label]["samples"] * np.int16().nbytes 
 
 
         
@@ -185,3 +187,5 @@ class Rp_base():
                     data = self._read_mem(addr=addr, size=(samples), dtype=np.int16)
                     scope_dict[frame_label] [scope_label][acq_label] = {"t": t, "dec": dec, "samples": samples, "data": data}
         return scope_dict
+    
+
