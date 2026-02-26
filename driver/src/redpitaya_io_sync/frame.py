@@ -6,19 +6,19 @@ from .io.sync import TriggerSource
 PREALLOCATION_BLOCK_LEN = 0x10000
 
 class IoSyncFrame:
-    def __init__(self, device, trig: int | None = None):
+    def __init__(self, device_type, trig: int | None = None):
         if trig is None:
             trig = TriggerSource.NONE
         if trig not in TriggerSource.__dict__.values():
             raise Exception(f"Trigger source {trig} is not valid. Valid sources are: {list(TriggerSource.__dict__.values())}.")
-        self._device = device
+        self._device_type = device_type
         self._trig = trig
         self._io_dict = {}
         self._idx = 0
-        for io_name in self._device.IO_DICT.keys():
-            io_class = self._device.IO_DICT[io_name]["class"]
-            io_addr = self._device.IO_DICT[io_name]["addr"]
-            clk_freq = self._device.CLK_FREQ
+        for io_name in self._device_type.IO_DICT.keys():
+            io_class = self._device_type.IO_DICT[io_name]["class"]
+            io_addr = self._device_type.IO_DICT[io_name]["addr"]
+            clk_freq = self._device_type.CLK_FREQ
             self._io_dict[io_name] = io_class(addr=io_addr, clk_freq=clk_freq)
         self._set_sync()
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
@@ -130,14 +130,14 @@ class IoSyncFrame:
 
 
 class ParametrizedIoSyncFrame():
-    def __init__(self, device, trig: int | None = None):
+    def __init__(self, device_type, trig: int | None = None):
         if trig is None:
             trig = TriggerSource.NONE
         if trig not in TriggerSource.__dict__.values():
             raise Exception(f"Trigger source {trig} is not valid. Valid sources are: {list(TriggerSource.__dict__.values())}.")
-        self._device = device
+        self._device_type = device_type
         self._trig = trig
-        self._frame = IoSyncFrame(device=device, trig=trig)
+        self._frame = IoSyncFrame(device_type=device_type, trig=trig)
         self._frame_param = {}
         self._frame_param_last = {}
         self._frame_func = None

@@ -6,7 +6,6 @@ from redpitaya_io_sync.io.scope import ScopeSource
 from redpitaya_io_sync.io.sync import TriggerSource
 
 
-
 from pprint import pprint
 
 rp0 = Rp_125_14_Mock(ip="192.168.1.143", label="rp_0")
@@ -15,17 +14,17 @@ rp2 = Rp_125_14_Mock(ip="192.168.1.145", label="rp_2")
 
 
 #Frames
-fr_0_0 = IoSyncFrame(device=rp0, trig=TriggerSource.EXT_HIGH)
-fr_0_1 = IoSyncFrame(device=rp0, trig=None)
-fr_0_2 = IoSyncFrame(device=rp0, trig=None)
+fr_0_0 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=TriggerSource.EXT_HIGH)
+fr_0_1 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
+fr_0_2 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
 
-fr_1_0 = IoSyncFrame(device=rp1, trig=None)
-fr_1_1 = IoSyncFrame(device=rp1, trig=None)
+fr_1_0 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
+fr_1_1 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
 
-fr_2_0 = IoSyncFrame(device=rp2, trig=None)
-fr_2_1 = IoSyncFrame(device=rp2, trig=None)
-fr_2_2 = IoSyncFrame(device=rp2, trig=None)
-fr_2_3 = ParametrizedIoSyncFrame(device=rp2, trig=None)
+fr_2_0 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
+fr_2_1 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
+fr_2_2 = IoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
+fr_2_3 = ParametrizedIoSyncFrame(device_type=Rp_125_14_Mock, trig=None)
 
 
 #Instructions for frame_0_0 (non-parametrized frame)
@@ -49,17 +48,17 @@ fr_2_3.set_frame_function(frame_func)
 #Sequence
 seq = IoSequence(device_list=[rp0, rp1, rp2])
 
-seq.add_frame(fr_0_0, label="fr_0_0")
+seq.add_frame(fr_0_0, label="fr_0_0", device=rp0)
 seq.add_rsync()
-seq.add_frame(fr_0_1, label="fr_0_1")
-seq.add_frame(fr_0_2, label="fr_0_2")
-seq.add_frame(fr_1_0, label="fr_1_0")
-seq.add_frame(fr_1_1, label="fr_1_1")
-seq.add_frame(fr_2_0, label="fr_2_0")
-seq.add_frame(fr_2_1, label="fr_2_1")
+seq.add_frame(fr_0_1, label="fr_0_1", device=rp0)
+seq.add_frame(fr_0_2, label="fr_0_2", device=rp0)
+seq.add_frame(fr_1_0, label="fr_1_0", device=rp1)
+seq.add_frame(fr_1_1, label="fr_1_1", device=rp1)
+seq.add_frame(fr_2_0, label="fr_2_0", device=rp2)
+seq.add_frame(fr_2_1, label="fr_2_1", device=rp2)
 seq.add_rsync()
-seq.add_frame(fr_2_2, label="fr_2_2")
-seq.add_frame(fr_2_3, label="fr_2_3")
+seq.add_frame(fr_2_2, label="fr_2_2", device=rp2)
+seq.add_frame(fr_2_3, label="fr_2_3", device=rp2)
 
 
 
