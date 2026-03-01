@@ -10,6 +10,7 @@ module instr_breakout#(
     input clk,
     input resetn,
     input en,
+    input flush_fifo,
     input trig,
     
     input [INSTR_TIME_MSB-INSTR_TIME_LSB:0] time_counter,
@@ -29,7 +30,7 @@ module instr_breakout#(
     localparam CMD_DONE = 'hE, CMD_NOP = 'hF;
     
     //fsm states
-    localparam IDLE = 0, RUNNING = 1, ERROR = 2
+    localparam IDLE = 0, RUNNING = 1, ERROR = 2;
     reg [1:0] state;
 
     //extract fields from instruction
@@ -38,22 +39,21 @@ module instr_breakout#(
     wire [INSTR_DATA_MSB-INSTR_DATA_LSB:0] data_i;
     assign cmd_i = S00_AXIS_tdata[INSTR_CMD_MSB:INSTR_CMD_LSB];
     assign time_i = S00_AXIS_tdata[INSTR_TIME_MSB:INSTR_TIME_LSB];
-    assign data_i = S00_AXIS_tdata[INSTR_DATA_MSB:DATA_LSB];
+    assign data_i = S00_AXIS_tdata[INSTR_DATA_MSB:INSTR_DATA_LSB];
     
     //output signals
     assign done = (en == 1) && (state == IDLE);
     assign error = (en == 1) && (state == ERROR);
-    assign S00_AXIS_tready = ((en == 1) && (state == RUNNING) && (time_i == time_counter)) ;
+    assign S00_AXIS_tready = ((en == 1) && (state == RUNNING) && (time_i == time_counter)) || (flush_fifo == 1);
 
 
     always @(posedge clk) begin
         if(resetn==0) begin
             state <= IDLE;
-            intr_valid <= 0;
+            instr_valid <= 0;
             instr_cmd <= 0;
             instr_data <= 0;
         end else begin
-            trig_old <= trig;
             case(state)
                 IDLE: begin
                     instr_valid <= 0;

@@ -1,7 +1,9 @@
-module instr_breakout#(
+module sync#(
     localparam INSTR_WIDTH = 64,
     localparam INSTR_CMD_LSB = 56,
     localparam INSTR_CMD_MSB = 59,
+    localparam INSTR_TIME_LSB = 32,
+    localparam INSTR_TIME_MSB = 55,
     localparam INSTR_DATA_LSB = 0,
     localparam INSTR_DATA_MSB = 31,
     localparam SHIFT_REG_WIDTH = 4
@@ -24,7 +26,7 @@ module instr_breakout#(
     input S00_AXIS_tvalid,
     output S00_AXIS_tready,
 
-    output [INSTR_TIME_MSB-INSTR_TIME_LSB:0] time_counter
+    output reg [INSTR_TIME_MSB-INSTR_TIME_LSB:0] time_counter
 
 );
     //instruction commands
@@ -39,9 +41,9 @@ module instr_breakout#(
     
     //extract fields from instruction
     wire [INSTR_CMD_MSB-INSTR_CMD_LSB:0] cmd_i;
-    wire [INSTR_DATA_MSB-DATA_LSB:0] data_i;
+    wire [INSTR_DATA_MSB-INSTR_DATA_LSB:0] data_i;
     assign cmd_i = S00_AXIS_tdata[INSTR_CMD_MSB:INSTR_CMD_LSB];
-    assign data_i = S00_AXIS_tdata[INSTR_DATA_MSB:DATA_LSB];
+    assign data_i = S00_AXIS_tdata[INSTR_DATA_MSB:INSTR_DATA_LSB];
     
 
     //shift registers

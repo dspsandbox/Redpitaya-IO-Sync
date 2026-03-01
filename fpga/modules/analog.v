@@ -33,7 +33,7 @@ module analog #(
 
     //Update internal registers based on instruction
     always @(posedge clk) begin
-        if resetn == 0 begin
+        if (resetn == 0) begin
             ph_off_reg <= PHASE_OFF_DEFAULT;
             ph_rst_reg <= 0;
             ph_inc_reg <= PHASE_INCR_DEFAULT;

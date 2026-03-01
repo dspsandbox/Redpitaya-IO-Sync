@@ -24,7 +24,7 @@ module instr_mux #(
 
     output  [INSTR_WIDTH-1:0] M03_AXIS_tdata,
     output M03_AXIS_tvalid,
-    input M03_AXIS_tready
+    input M03_AXIS_tready,
 
     output  [INSTR_WIDTH-1:0] M04_AXIS_tdata,
     output M04_AXIS_tvalid,
@@ -40,7 +40,7 @@ module instr_mux #(
 
     output  [INSTR_WIDTH-1:0] M07_AXIS_tdata,
     output M07_AXIS_tvalid,
-    input M07_AXIS_tready
+    input M07_AXIS_tready,
 
     output  [INSTR_WIDTH-1:0] M08_AXIS_tdata,
     output M08_AXIS_tvalid,
@@ -56,7 +56,7 @@ module instr_mux #(
 
     output  [INSTR_WIDTH-1:0] M11_AXIS_tdata,
     output M11_AXIS_tvalid,
-    input M11_AXIS_tready
+    input M11_AXIS_tready,
 
     output  [INSTR_WIDTH-1:0] M12_AXIS_tdata,
     output M12_AXIS_tvalid,
@@ -142,7 +142,8 @@ module instr_mux #(
                              (addr == 12) ? M12_AXIS_tready :
                              (addr == 13) ? M13_AXIS_tready :
                              (addr == 14) ? M14_AXIS_tready :
-                             M15_AXIS_tready;
+                             (addr == 15) ? M15_AXIS_tready :
+                             1'b0;
 
 
 

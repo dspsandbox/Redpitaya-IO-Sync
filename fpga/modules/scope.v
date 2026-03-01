@@ -47,7 +47,7 @@ module scope#(
     input [DATA_14_WIDTH-1:0] data_14,
     input [DATA_15_WIDTH-1:0] data_15,
     
-    output reg [SCOPE_WIDTH-1:0] scope_tdata
+    output reg [SCOPE_WIDTH-1:0] scope_tdata,
     output reg scope_tvalid
 );
 
