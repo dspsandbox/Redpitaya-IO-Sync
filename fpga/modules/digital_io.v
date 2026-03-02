@@ -12,8 +12,8 @@ module digital_io #(
     input instr_valid,
     input [INSTR_CMD_WIDTH-1:0] instr_cmd,
     input [INSTR_DATA_WIDTH-1:0] instr_data,
-    output reg [IO_WIDTH-1:0] io_o,
-    output reg [IO_WIDTH-1:0] io_t
+    output reg [IO_WIDTH-1:0] io_t,
+    output reg [IO_WIDTH-1:0] io_o
 
 );
     //instruction commands
