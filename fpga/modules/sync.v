@@ -6,7 +6,7 @@ module sync#(
     localparam INSTR_TIME_MSB = 55,
     localparam INSTR_DATA_LSB = 0,
     localparam INSTR_DATA_MSB = 31,
-    localparam SHIFT_REG_WIDTH = 4
+    localparam SHIFT_REG_WIDTH = 5
 ) (
     input clk,
     input resetn,
@@ -22,6 +22,8 @@ module sync#(
     output sync_daisy_1_o,
     output sync_daisy_2_o,
 
+    output trig_o,
+
     input [INSTR_WIDTH-1:0] S00_AXIS_tdata,
     input S00_AXIS_tvalid,
     output S00_AXIS_tready,
@@ -36,8 +38,8 @@ module sync#(
     localparam TrigNone = 0, TrigExtHigh = 1, TrigExtLow = 2, TrigExtRise = 3, TrigExtFall = 4, TrigExtRiseFall = 5, TrigSyncDaisyChain = 6;
 
     //fsm states
-    localparam IDLE = 0, TRIG = 1, WAIT_TRIG_EXT_HIGH = 1, WAIT_TRIG_EXT_LOW = 2, WAIT_TRIG_EXT_RISE = 3, WAIT_TRIG_EXT_FALL = 4, WAIT_TRIG_EXT_RISE_FALL = 5, WAIT_SYNC = 6; 
-    reg [2:0] state;
+    localparam IDLE = 0, TRIG = 1, WAIT_TRIG_EXT_HIGH = 2, WAIT_TRIG_EXT_LOW = 3, WAIT_TRIG_EXT_RISE = 4, WAIT_TRIG_EXT_FALL = 5, WAIT_TRIG_EXT_RISE_FALL = 6, WAIT_SYNC = 7, WAIT_DONE = 8; 
+    reg [3:0] state;
     
     //extract fields from instruction
     wire [INSTR_CMD_MSB-INSTR_CMD_LSB:0] cmd_i;
@@ -101,13 +103,13 @@ module sync#(
                 end
 
                 TRIG: begin
-                    state <= IDLE;
+                    state <= WAIT_DONE;
                 end
                 
                 WAIT_TRIG_EXT_HIGH: begin
                     if(en == 0) begin
                         state <= IDLE;
-                    end else if(sr_trig_ext[SHIFT_REG_WIDTH-1] == 1) begin
+                    end else if(sr_trig_ext[SHIFT_REG_WIDTH-2] == 1) begin
                         state <= TRIG;
                     end else begin
                         state <= WAIT_TRIG_EXT_HIGH;
@@ -117,7 +119,7 @@ module sync#(
                 WAIT_TRIG_EXT_LOW: begin
                     if(en == 0) begin
                         state <= IDLE;
-                    end else if(sr_trig_ext[SHIFT_REG_WIDTH-1] == 0) begin
+                    end else if(sr_trig_ext[SHIFT_REG_WIDTH-2] == 0) begin
                         state <= TRIG;
                     end else begin
                         state <= WAIT_TRIG_EXT_LOW;
@@ -157,10 +159,20 @@ module sync#(
                 WAIT_SYNC: begin
                     if(en == 0) begin
                         state <= IDLE;
-                    end else if((sr_done[SHIFT_REG_WIDTH-1] == 1) && (sr_sync_daisy_1[SHIFT_REG_WIDTH-1] == 1) && (sr_sync_daisy_2[SHIFT_REG_WIDTH-1] == 1)) begin
+                    end else if((sr_done[SHIFT_REG_WIDTH-2] == 1) && (sr_sync_daisy_1[SHIFT_REG_WIDTH-2] == 1) && (sr_sync_daisy_2[SHIFT_REG_WIDTH-2] == 1)) begin
                         state <= TRIG;
                     end else begin
                         state <= WAIT_SYNC;
+                    end
+                end
+
+                WAIT_DONE: begin
+                    if(en == 0) begin
+                        state <= IDLE;
+                    end if(done_i == 1) begin
+                        state <= IDLE;
+                    end else begin
+                        state <= WAIT_DONE;
                     end
                 end
 
@@ -176,15 +188,18 @@ module sync#(
         if((resetn == 0) || (en==0))  begin
             time_counter <= 0;
         end else begin
-            if(state == TRIG) begin
-                time_counter <= 0;
-            end else begin
+            if(state == WAIT_DONE) begin
                 time_counter <= time_counter + 1;
+            end else begin
+                time_counter <= 0;
             end
         end
     end
 
     //tready logic
     assign S00_AXIS_tready = (((en == 1) && (state == IDLE)) || (flush_fifo==1));
+
+    //trig_o logic
+    assign trig_o = (en == 1) && (state == TRIG);
         
 endmodule
