@@ -2,10 +2,9 @@
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
     "xci_name": "clk_bd_clk_wiz_0_0",
-    "cell_name": "clk_wiz_0",
     "component_reference": "xilinx.com:ip:clk_wiz:6.0",
-    "ip_revision": "14",
-    "gen_directory": "../../../../../prj/dds/dds.tmp/clk_v1_0_project/clk_v1_0_project.gen/sources_1/ip/clk_bd_clk_wiz_0_0",
+    "ip_revision": "15",
+    "gen_directory": "../../../../prj/rp_125_14/rp_io_sync/rp_io_sync.tmp/clk_v1_0_project/clk_v1_0_project.gen/sources_1/ip/clk_bd_clk_wiz_0_0",
     "parameters": {
       "component_parameters": {
         "Component_Name": [ { "value": "clk_bd_clk_wiz_0_0", "resolve_type": "user", "usage": "all" } ],
@@ -585,7 +584,7 @@
       },
       "project_parameters": {
         "ARCHITECTURE": [ { "value": "zynq" } ],
-        "BASE_BOARD_PART": [ { "value": "redpitaya.com:redpitaya-125-14:part0:1.0" } ],
+        "BASE_BOARD_PART": [ { "value": "" } ],
         "BOARD_CONNECTIONS": [ { "value": "" } ],
         "DEVICE": [ { "value": "xc7z010" } ],
         "NEXTGEN_VERSAL": [ { "value": "0" } ],
@@ -599,12 +598,12 @@
       },
       "runtime_parameters": {
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
-        "IPREVISION": [ { "value": "14" } ],
+        "IPREVISION": [ { "value": "15" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../../prj/dds/dds.tmp/clk_v1_0_project/clk_v1_0_project.gen/sources_1/ip/clk_bd_clk_wiz_0_0" } ],
+        "OUTPUTDIR": [ { "value": "../../../../prj/rp_125_14/rp_io_sync/rp_io_sync.tmp/clk_v1_0_project/clk_v1_0_project.gen/sources_1/ip/clk_bd_clk_wiz_0_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
-        "SWVERSION": [ { "value": "2024.1" } ],
+        "SWVERSION": [ { "value": "2024.2" } ],
         "SYNTHESISFLOW": [ { "value": "GLOBAL" } ]
       }
     },
