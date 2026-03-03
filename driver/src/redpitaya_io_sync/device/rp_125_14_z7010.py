@@ -38,11 +38,12 @@ class Rp_125_14_Z7010(Rp_base):
         "reg_bank_done" : 0x4000_0004,
         "reg_bank_sync_counter" : 0x4000_0008,
         "reg_bank_en" : 0x4000_0040,
-        "reg_bank_reset" : 0x4000_0044,
-        "reg_bank_flush" : 0x4000_0048,
+        "reg_bank_flush" : 0x4000_0044,
+        "reg_bank_scope_1_samples" : 0x4000_0048,
+        "reg_bank_scope_2_samples" : 0x4000_0050,
         "dma_instr" : 0x4001_0000,
-        "dma_scope_0" : 0x4002_0000,
-        "dma_scope_1" : 0x4003_0000
+        "dma_scope_1" : 0x4002_0000,
+        "dma_scope_2" : 0x4003_0000
     }
     BITSTREAM = os.path.join(os.path.dirname(__file__), "../bitstream/io_sync_rp_125_14_z7010.bit")
 

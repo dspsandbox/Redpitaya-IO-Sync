@@ -16,11 +16,24 @@ module tdata_breakout #(
     output[DATA_WIDTH-1:0] tdata
 );
 
+    reg [DATA_WIDTH-1:0] tdata_reg;
+
+    always @(posedge clk) begin
+        if(resetn == 0) begin
+            tdata_reg <= 0;
+        end else begin
+            if(S00_AXIS_tvalid == 1) begin
+                tdata_reg <= S00_AXIS_tdata;
+            end else begin
+                tdata_reg <= tdata_reg;
+            end
+        end
+    end
+
     assign S00_AXIS_tready = M00_AXIS_tready;
     assign M00_AXIS_tvalid = S00_AXIS_tvalid;
-    assign M00_AXIS_tdata = S00_AXIS_tdata;
+    assign M00_AXIS_tdata = S00_AXIS_tvalid ? S00_AXIS_tdata : tdata_reg;
     assign M00_AXIS_tlast = S00_AXIS_tlast;
-
     assign tdata = S00_AXIS_tdata;
 
     endmodule

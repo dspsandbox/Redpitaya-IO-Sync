@@ -1,7 +1,9 @@
 module led #(
     parameter LED_WIDTH = 8,
     localparam INSTR_CMD_WIDTH = 4,
-    localparam INSTR_DATA_WIDTH = 32
+    localparam INSTR_DATA_WIDTH = 32,
+    localparam VAL_OFFSET = 0,
+    localparam MASK_OFFSET = 16
     
 )(
     input clk,

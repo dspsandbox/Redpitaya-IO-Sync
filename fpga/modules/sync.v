@@ -6,7 +6,9 @@ module sync#(
     localparam INSTR_TIME_MSB = 55,
     localparam INSTR_DATA_LSB = 0,
     localparam INSTR_DATA_MSB = 31,
-    localparam SHIFT_REG_WIDTH = 5
+    localparam SHIFT_REG_WIDTH = 5,
+    localparam SYNC_COUNTER_WIDTH = 32
+
 ) (
     input clk,
     input resetn,
@@ -28,7 +30,10 @@ module sync#(
     input S00_AXIS_tvalid,
     output S00_AXIS_tready,
 
-    output reg [INSTR_TIME_MSB-INSTR_TIME_LSB:0] time_counter
+    output reg [INSTR_TIME_MSB-INSTR_TIME_LSB:0] time_counter,
+    output reg [SYNC_COUNTER_WIDTH-1:0] sync_counter
+
+
 
 );
     //instruction commands
@@ -195,6 +200,20 @@ module sync#(
             end
         end
     end
+
+    //sync counter
+    always @(posedge clk) begin
+        if((resetn == 0) || (en==0))  begin
+            sync_counter <= 0;
+        end else begin
+            if(state == TRIG) begin
+                sync_counter <= sync_counter + 1;
+            end else begin
+                sync_counter <= sync_counter;
+            end
+        end
+    end
+
 
     //tready logic
     assign S00_AXIS_tready = (((en == 1) && (state == IDLE)) || (flush_fifo==1));

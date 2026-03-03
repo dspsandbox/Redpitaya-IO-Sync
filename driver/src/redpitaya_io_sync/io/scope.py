@@ -12,14 +12,16 @@ class ScopeSource:
     ANALOG_OUT_2 = 0x3
     DIGITAL_IO_1 = 0x4
     DIGITAL_IO_2 = 0x5
-    PWM_1 = 0x6
-    PWM_2 = 0x7
-    PWM_3 = 0x8
-    PWM_4 = 0x9
-    XADC_1 = 0xA
-    XADC_2 = 0xB
-    XADC_3 = 0xC
-    XADC_4 = 0xD
+    DIGITAL_IO_3 = 0x6
+    DIGITAL_IO_4 = 0x7
+    PWM_1 = 0x8
+    PWM_2 = 0x9
+    PWM_3 = 0xA
+    PWM_4 = 0xB
+    XADC_1 = 0xC
+    XADC_2 = 0xD
+    XADC_3 = 0xE
+    XADC_4 = 0xF
     
 
 class Scope(BaseIo):

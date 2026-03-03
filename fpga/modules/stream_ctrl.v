@@ -4,7 +4,6 @@ module stream_ctrl #(
     input clk,
     input resetn,
     input [31 : 0] samples,
-    input trig, 
     input en, 
     input [DATA_WIDTH - 1 : 0] stream_i_tdata,
     input stream_i_tvalid,
@@ -18,35 +17,48 @@ module stream_ctrl #(
     localparam [0:0] IDLE=0, RUNNING=1;
     reg state;
     reg [31 : 0] counter;
-    reg trig_old;
+    reg en_old;
 
 
 
     always @(posedge clk) begin
-        if ((resetn == 0) || (en == 0)) begin
+        if (resetn == 0) begin
             state <= IDLE;
             counter <= 0;
-            trig_old <= 0;
+            en_old <= 0;
         end else begin
+            en_old <= en;
             case(state)
                 IDLE: begin
                     counter <= 0;
-                    if((trig == 1) && (trig_old == 0) ) begin
+                    if((en == 1) && (en_old == 0)) begin
                         state <= RUNNING;
+                    end else begin
+                        state <= IDLE;
                     end
                 end
 
+
                 RUNNING: begin 
-                    if((stream_i_tvalid == 1) && (stream_o_tready == 1)) begin
-                        counter <= counter + 1;
-                        if(counter == (samples - 1)) begin
-                            state <= IDLE;
+                    if(en == 0) begin
+                        state <= IDLE;
+                        counter <= 0;
+                    end else begin
+                        if((stream_i_tvalid == 1) && (stream_o_tready == 1)) begin
+                            counter <= counter + 1;
+                            if(counter == (samples - 1)) begin
+                                state <= IDLE;
+                            end else begin
+                                state <= RUNNING;
+                            end
+
+                        end else begin
+                            state <= RUNNING;
+                            counter <= counter;
                         end
                     end
                 end
             endcase
-
-            trig_old <= trig;
         end
     end
 

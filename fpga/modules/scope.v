@@ -1,14 +1,14 @@
 module scope#(
-    parameter DATA_0_WIDTH = 32,
-    parameter DATA_1_WIDTH = 32,
-    parameter DATA_2_WIDTH = 32,
-    parameter DATA_3_WIDTH = 32,
-    parameter DATA_4_WIDTH = 32,
-    parameter DATA_5_WIDTH = 32,
-    parameter DATA_6_WIDTH = 32,
-    parameter DATA_7_WIDTH = 32,
-    parameter DATA_8_WIDTH = 32,
-    parameter DATA_9_WIDTH = 32,
+    parameter DATA_00_WIDTH = 32,
+    parameter DATA_01_WIDTH = 32,
+    parameter DATA_02_WIDTH = 32,
+    parameter DATA_03_WIDTH = 32,
+    parameter DATA_04_WIDTH = 32,
+    parameter DATA_05_WIDTH = 32,
+    parameter DATA_06_WIDTH = 32,
+    parameter DATA_07_WIDTH = 32,
+    parameter DATA_08_WIDTH = 32,
+    parameter DATA_09_WIDTH = 32,
     parameter DATA_10_WIDTH = 32,
     parameter DATA_11_WIDTH = 32,
     parameter DATA_12_WIDTH = 32,
@@ -25,21 +25,20 @@ module scope#(
     input clk,
     input resetn,
     input en,
-    input flush_fifo,
     input instr_valid,
     input [INSTR_CMD_WIDTH-1:0] instr_cmd,
     input [INSTR_DATA_WIDTH-1:0] instr_data,
 
-    input [DATA_0_WIDTH-1:0] data_0,
-    input [DATA_1_WIDTH-1:0] data_1,
-    input [DATA_2_WIDTH-1:0] data_2,
-    input [DATA_3_WIDTH-1:0] data_3,
-    input [DATA_4_WIDTH-1:0] data_4,
-    input [DATA_5_WIDTH-1:0] data_5,
-    input [DATA_6_WIDTH-1:0] data_6,    
-    input [DATA_7_WIDTH-1:0] data_7,
-    input [DATA_8_WIDTH-1:0] data_8,
-    input [DATA_9_WIDTH-1:0] data_9,
+    input [DATA_00_WIDTH-1:0] data_0,
+    input [DATA_01_WIDTH-1:0] data_1,
+    input [DATA_02_WIDTH-1:0] data_2,
+    input [DATA_03_WIDTH-1:0] data_3,
+    input [DATA_04_WIDTH-1:0] data_4,
+    input [DATA_05_WIDTH-1:0] data_5,
+    input [DATA_06_WIDTH-1:0] data_6,    
+    input [DATA_07_WIDTH-1:0] data_7,
+    input [DATA_08_WIDTH-1:0] data_8,
+    input [DATA_09_WIDTH-1:0] data_9,
     input [DATA_10_WIDTH-1:0] data_10,
     input [DATA_11_WIDTH-1:0] data_11,
     input [DATA_12_WIDTH-1:0] data_12,
@@ -106,22 +105,22 @@ module scope#(
 
             //tdata
             case(src) 
-                0: scope_tdata <= data_0[SCOPE_WIDTH-1:0];
-                1: scope_tdata <= data_1[SCOPE_WIDTH-1:0];
-                2: scope_tdata <= data_2[SCOPE_WIDTH-1:0];
-                3: scope_tdata <= data_3[SCOPE_WIDTH-1:0];
-                4: scope_tdata <= data_4[SCOPE_WIDTH-1:0];
-                5: scope_tdata <= data_5[SCOPE_WIDTH-1:0];
-                6: scope_tdata <= data_6[SCOPE_WIDTH-1:0];
-                7: scope_tdata <= data_7[SCOPE_WIDTH-1:0];
-                8: scope_tdata <= data_8[SCOPE_WIDTH-1:0];
-                9: scope_tdata <= data_9[SCOPE_WIDTH-1:0];
-                10: scope_tdata <= data_10[SCOPE_WIDTH-1:0];
-                11: scope_tdata <= data_11[SCOPE_WIDTH-1:0];
-                12: scope_tdata <= data_12[SCOPE_WIDTH-1:0];
-                13: scope_tdata <= data_13[SCOPE_WIDTH-1:0];
-                14: scope_tdata <= data_14[SCOPE_WIDTH-1:0];
-                15: scope_tdata <= data_15[SCOPE_WIDTH-1:0];
+                0: scope_tdata <= data_0;
+                1: scope_tdata <= data_1;
+                2: scope_tdata <= data_2;
+                3: scope_tdata <= data_3;
+                4: scope_tdata <= data_4;
+                5: scope_tdata <= data_5;
+                6: scope_tdata <= data_6;
+                7: scope_tdata <= data_7;
+                8: scope_tdata <= data_8;
+                9: scope_tdata <= data_9;
+                10: scope_tdata <= data_10;
+                11: scope_tdata <= data_11;
+                12: scope_tdata <= data_12;
+                13: scope_tdata <= data_13;
+                14: scope_tdata <= data_14;
+                15: scope_tdata <= data_15;
                 default: scope_tdata <= 0;
             endcase
         end
