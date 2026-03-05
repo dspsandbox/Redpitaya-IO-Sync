@@ -22,5 +22,12 @@ class Rp_125_14_Mock(Rp_125_14_Z7010):
     def upload_bitstream(self, force=False):
         pass
     
+    def start(self):
+        pass    
         
+    def stop(self):
+        pass
+
+    def _init_dma(self):
+        return
    

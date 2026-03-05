@@ -9,7 +9,7 @@ class TriggerSource:
     EXT_RISE = 0x3
     EXT_FALL = 0x4
     EXT_RISE_FALL = 0x5
-    SYNC_DAISY_CHAIN = 0x6
+    _SYNC_DAISY_CHAIN = 0x6
 
 
 

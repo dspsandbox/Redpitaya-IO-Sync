@@ -31,7 +31,7 @@ module stream_ctrl #(
             case(state)
                 IDLE: begin
                     counter <= 0;
-                    if((en == 1) && (en_old == 0)) begin
+                    if((en == 1) && (en_old == 0) && (samples != 0)) begin
                         state <= RUNNING;
                     end else begin
                         state <= IDLE;

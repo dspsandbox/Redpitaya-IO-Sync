@@ -110,11 +110,13 @@ class IoSyncFrame:
 
 
     def set_time(self, t : int):
+        t = int(t)
         for io_name, io in self._io_dict.items():
             if not io_name.startswith("_"):
                 io.set_time(t)
 
     def wait(self, delay : int = 0):
+        delay = int(delay)
         t = self.get_time()
         self.set_time(t + delay)
 

@@ -38,7 +38,7 @@ class IoSequence():
     def add_rsync(self):
         label = f"rsync_{len(self._rsync_label_list)}"
         for device in self._device_dict.values():
-            device._add_frame(IoSyncFrame(device_type=type(device), trig=TriggerSource.SYNC_DAISY_CHAIN), label=label)
+            device._add_frame(IoSyncFrame(device_type=type(device), trig=TriggerSource._SYNC_DAISY_CHAIN), label=label)
         self._rsync_label_list.append(label)
 
 
@@ -72,8 +72,8 @@ class IoSequence():
         frame_label_dict = {}
         for device_uid in self._device_dict.keys():
             device = self._device_dict[device_uid]
-            frame_label_dict[device_uid] = [(f"{label} (*)" if device._frame_dict[label]._trig is not 0 
-                                            and label not in self._rsync_label_list else label) for label in device._frame_dict.keys()]
+            trig_ext = device._frame_dict[label]._trig in [TriggerSource.EXT_HIGH, TriggerSource.EXT_LOW, TriggerSource.EXT_RISE, TriggerSource.EXT_FALL, TriggerSource.EXT_RISE_FALL]
+            frame_label_dict[device_uid] = [(f"{label} (*)" if trig_ext else label) for label in device._frame_dict.keys()]
             
 
         for rsync_label in self._rsync_label_list:
@@ -124,6 +124,11 @@ class IoSequence():
             device._start()
 
   
+    def is_done(self):
+        return all(device_status["done"] for device_status in self.get_status().values())
+    
+    def is_error(self):
+        return any(device_status["error"] for device_status in self.get_status().values())
 
     def stop(self):
         for device in self._device_dict.values():
