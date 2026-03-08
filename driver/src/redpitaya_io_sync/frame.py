@@ -105,20 +105,17 @@ class IoSyncFrame:
             
           
                 
-    def get_time(self):
-        return max(io.get_time() for io_name, io in self._io_dict.items() if not io_name.startswith("_"))
-
-
     def set_time(self, t : int):
-        t = int(t)
-        for io_name, io in self._io_dict.items():
-            if not io_name.startswith("_"):
-                io.set_time(t)
+        for io in self._io_dict.values():
+            io.set_time(t)
+    
+    def rsync(self):
+        tmax = max(io.get_time() for io in self._io_dict.values())
+        self.set_time(tmax)
 
     def wait(self, delay : int = 0):
-        delay = int(delay)
-        t = self.get_time()
-        self.set_time(t + delay)
+        for io in self._io_dict.values():
+            io.wait(delay)
 
 
     def _get_acquisition_dict(self):

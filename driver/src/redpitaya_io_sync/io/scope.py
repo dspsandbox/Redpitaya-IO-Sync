@@ -71,7 +71,7 @@ class Scope(BaseIo):
         #Add Scope instruction
         self._acq_dict[label] = {'t': self._tnext, 'samples': samples, 'dec': dec, 'addr': None}
         self._acq_samples += samples
-        self._add_instruction(cmd=cmd, data=((dec_pow_2 << 24) | samples), duration=samples * dec)
+        self._add_instruction(cmd=cmd, data=((dec_pow_2 << 24) | samples))
         
         
     def _get_acquisition_dict(self):

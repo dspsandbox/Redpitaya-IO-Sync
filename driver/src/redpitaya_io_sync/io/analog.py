@@ -37,7 +37,7 @@ class AnalogBase(BaseIo):
         self._add_instruction(cmd=cmd, data=data)
 
     def phase_reset(self, update: bool = True):
-        data = int(update) << 31
+        data = (int(update) << 31) | 1
         cmd = AnalogCmd.PHASE_RST | (int(update) << 3)
         self._add_instruction(cmd=cmd, data=data)
 
