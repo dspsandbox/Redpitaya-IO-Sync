@@ -18,11 +18,14 @@ class IoSequence():
     
     
     def reset(self):
+        self._check_sequence_done()
         self._rsync_label_list = []
-        self._device_dict = {}
+        for device in self._device_dict.values():
+            device._reset()
 
 
     def add_frame(self, frame, device, label=None):
+        self._check_sequence_done()
         if (type(frame) is not IoSyncFrame) and (type(frame) is not ParametrizedIoSyncFrame):
              raise Exception(f"Frame must be of type IoSyncFrame or ParametrizedIoSyncFrame, got {type(frame)}.") 
         if not issubclass(type(device), Rp_base):
@@ -36,6 +39,7 @@ class IoSequence():
         
 
     def add_rsync(self):
+        self._check_sequence_done()
         label = f"rsync_{len(self._rsync_label_list)}"
         for device in self._device_dict.values():
             device._add_frame(IoSyncFrame(device_type=type(device), trig=TriggerSource._SYNC_DAISY_CHAIN), label=label)
@@ -72,8 +76,7 @@ class IoSequence():
         frame_label_dict = {}
         for device_uid in self._device_dict.keys():
             device = self._device_dict[device_uid]
-            trig_ext = device._frame_dict[label]._trig in [TriggerSource.EXT_HIGH, TriggerSource.EXT_LOW, TriggerSource.EXT_RISE, TriggerSource.EXT_FALL, TriggerSource.EXT_RISE_FALL]
-            frame_label_dict[device_uid] = [(f"{label} (*)" if trig_ext else label) for label in device._frame_dict.keys()]
+            frame_label_dict[device_uid] = [(f"{label} (*)" if device._frame_dict[label]._trig in [TriggerSource.EXT_HIGH, TriggerSource.EXT_LOW, TriggerSource.EXT_RISE, TriggerSource.EXT_FALL, TriggerSource.EXT_RISE_FALL] else label) for label in device._frame_dict.keys()]
             
 
         for rsync_label in self._rsync_label_list:
@@ -115,15 +118,29 @@ class IoSequence():
         return description
 
     def upload(self, force=False):
+        self._check_sequence_done()
         for device in self._device_dict.values():
             device._upload(force=force)
                     
 
+    def _check_sequence_done(self, autostop=True):
+        status = self.get_status()
+        done = all(device_status["done"] for device_status in status.values())
+        enabled = any(device_status["enabled"] for device_status in status.values())
+        if enabled and not done:
+            raise Exception("Sequence is not finished, please stop it first")
+        
+        if enabled and done and autostop:
+            self.stop()
+
     def start(self):
+        self._check_sequence_done()
         for device in self._device_dict.values():
             device._start()
 
-  
+
+
+
     def is_done(self):
         return all(device_status["done"] for device_status in self.get_status().values())
     

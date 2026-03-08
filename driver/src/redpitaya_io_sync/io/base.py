@@ -17,6 +17,7 @@ class BaseIo():
         self._clk_freq = clk_freq
         self._tlast = 0
         self._tnext = 0
+        self._tdone=0
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
@@ -27,6 +28,7 @@ class BaseIo():
     def reset(self):
         self._tlast = 0
         self._tnext = 0
+        self._tdone = 0
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
@@ -39,10 +41,16 @@ class BaseIo():
         #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
         #Addr    |   Cmd   |   Time  |   Data
 
-        t = self._tnext
+        if cmd == BaseIoCmd.DONE:
+            t = self._tdone
+        else:
+            t = self._tnext
 
-        if (cmd != BaseIoCmd.NOP) and (t < self._tnext):
+        if (cmd != BaseIoCmd.DONE) and (t < self._tnext):
             raise Exception(f"Instruction time {t} is smaller than current time {self._tnext}.")
+        
+        if (cmd == BaseIoCmd.DONE) and (t < self._tdone):
+            raise Exception(f"DONE instruction time {t} is smaller than current DONE time {self._tdone}.")
 
         #Insert NOP instructions every 2^24 clk cycles (if needed)
         while (t - self._tlast) > (1<<24):
@@ -65,6 +73,7 @@ class BaseIo():
         self._idx += 1
         self._tlast = t
         self._tnext = t + duration
+        self._tdone = t + duration
         return 
 
             

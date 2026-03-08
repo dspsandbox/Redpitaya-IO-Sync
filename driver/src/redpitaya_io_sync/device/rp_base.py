@@ -165,7 +165,7 @@ class Rp_base():
         pass
         
         status = self._get_status()
-        if status["enabled"] and not status["completed"]:
+        if status["enabled"] and not status["done"]:
             raise Exception("Device is already running. Please stop the device before starting it again.")
              
         #Start dma

@@ -30,8 +30,8 @@ class Rp_125_14_Z7010(Rp_base):
     MMAP_DICT = {
         "pl" : {"addr": 0x4000_0000, "size": 0x0010_0000},
         "mem_instr" : {"addr": 0x0100_0000, "size": 0x0100_0000},
-        "mem_scope_1" : {"addr": 0x0200_0000, "size": 0x0050_0000},
-        "mem_scope_2" : {"addr": 0x0250_0000, "size": 0x0050_0000}
+        "mem_scope_1" : {"addr": 0x0200_0000, "size": 0x0080_0000},
+        "mem_scope_2" : {"addr": 0x0280_0000, "size": 0x0080_0000}
     }
     ADDR_DICT = {
         "reg_bank_err" : 0x4000_0000, 
