@@ -49,9 +49,10 @@ class _SDMAChannel:
 
     def stop(self):
         """Stops the DMA channel and aborts the current transfer"""
+        self._write_mem(self._offset, 0x0002)
         self._write_mem(self._offset, 0x0000)
-        while self.running:
-            pass
+        # while self.running:
+        #     pass
 
     def transfer(self, addr_start, nbytes):
         """Start a DMA transfer from/to the given physical address with the given number of bytes"""
