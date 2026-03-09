@@ -1,8 +1,9 @@
-class SyncCmd:
+from enum import Enum
+class SyncCmd(Enum):
     TrigSrc = 0x0
 
 
-class TriggerSource:
+class TriggerSource(Enum):
     NONE = 0x0
     EXT_HIGH = 0x1
     EXT_LOW = 0x2
@@ -22,11 +23,8 @@ class Sync (BaseIo):
     def __init__(self, addr, clk_freq):
         super().__init__(addr, clk_freq)
 
-    def trigger(self, src: int | None ):
-        if src is None:
-            src = TriggerSource.NONE
-        if src not in TriggerSource.__dict__.values(): 
-            raise Exception(f"Trigger source {src} is not valid.")
-        
-        self._add_instruction(cmd=SyncCmd.TrigSrc, data=src)
+    def trigger(self, src: TriggerSource):
+        if src not in TriggerSource:
+            raise Exception(f"Trigger source {src} is not valid. Should be of type TriggerSource or None.")
+        self._add_instruction(cmd=SyncCmd.TrigSrc.value, data=src.value)
 

@@ -231,9 +231,10 @@ class Rp_base():
                     addr = acq_dict[scope_label][acq_label]["addr"]
                     samples = acq_dict[scope_label][acq_label]["samples"]
                     t = acq_dict[scope_label][acq_label]["t"]
+                    src = acq_dict[scope_label][acq_label]["src"]
                     dec = acq_dict[scope_label][acq_label]["dec"]
                     data = self._read_mem(addr=addr, size=(samples), dtype=np.int16)
-                    scope_dict[frame_label] [scope_label][acq_label] = {"t": t, "dec": dec, "samples": samples, "data": data}
+                    scope_dict[frame_label] [scope_label][acq_label] = {"t": t, "src": src, "dec": dec, "samples": samples, "data": data}
         return scope_dict
     
 

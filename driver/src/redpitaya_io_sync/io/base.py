@@ -1,7 +1,8 @@
-
+from enum import Enum
 import numpy as np
 
-class BaseIoCmd:
+
+class BaseIoCmd(Enum):
     NOP = 0xF
     DONE = 0xE
 
@@ -15,7 +16,7 @@ class BaseIo():
     def __init__(self, addr, clk_freq):
         self._addr = addr
         self._clk_freq = clk_freq
-        self._tlast = 0
+        self._tlast = -1
         self._tnext = 0
         self._tdone=0
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
@@ -26,7 +27,7 @@ class BaseIo():
     
     
     def reset(self):
-        self._tlast = 0
+        self._tlast = -1
         self._tnext = 0
         self._tdone = 0
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
@@ -41,21 +42,15 @@ class BaseIo():
         #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
         #Addr    |   Cmd   |   Time  |   Data
 
-        if cmd == BaseIoCmd.DONE:
+        if cmd == BaseIoCmd.DONE.value:
             t = self._tdone
         else:
             t = self._tnext
 
-        if (cmd != BaseIoCmd.DONE) and (t < self._tnext):
-            raise Exception(f"Instruction time {t} is smaller than current time {self._tnext}.")
-        
-        if (cmd == BaseIoCmd.DONE) and (t < self._tdone):
-            raise Exception(f"DONE instruction time {t} is smaller than current DONE time {self._tdone}.")
-
         #Insert NOP instructions every 2^24 clk cycles (if needed)
         while (t - self._tlast) > (1<<24):
             self._tnext = self._tlast + (1 << 24)
-            self._add_instruction(cmd=BaseIoCmd.NOP, data=0, duration=(1 << 24))
+            self._add_instruction(cmd=BaseIoCmd.NOP.value, data=0, duration=(1 << 24))
 
         #Preallocate more space if needed
         if self._idx >= self._preallocation_len:
@@ -74,18 +69,21 @@ class BaseIo():
         self._tlast = t
         self._tnext = t + duration
         self._tdone = t + duration
+
+        #Set lock
+        if cmd == BaseIoCmd.DONE.value:
+            self._locked = True
         return 
 
-            
+
     def _get_instruction_and_time_list(self):
         
         if not self._locked:
             #Add DONE instruction at the end of the instruction list if required
             if self._requires_done_instruction:
-                self._add_instruction(cmd=BaseIoCmd.DONE, data=0)
+                self._add_instruction(cmd=BaseIoCmd.DONE.value, data=0)
             
-            #Set lock
-            self._locked = True
+           
 
         instr_list = self._instr_list[:self._idx]
         t_list = self._t_list[:self._idx]

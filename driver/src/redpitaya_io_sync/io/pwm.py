@@ -1,6 +1,7 @@
+from enum import Enum
 from .base import BaseIo
 
-class PwmCmd:
+class PwmCmd(Enum):
     DUTY_CYCLE = 0x0
 
 class Pwm(BaseIo): 
@@ -13,4 +14,4 @@ class Pwm(BaseIo):
         if (val < DUTY_CYCLE_MIN) or (val > DUTY_CYCLE_MAX):
             raise Exception(f"Duty cycle value {val} is out of range [{DUTY_CYCLE_MIN}, {DUTY_CYCLE_MAX}].")
         data = int(val * ((1 << 8) - 1))
-        self._add_instruction(cmd=PwmCmd.DUTY_CYCLE, data=data)
+        self._add_instruction(cmd=PwmCmd.DUTY_CYCLE.value, data=data)

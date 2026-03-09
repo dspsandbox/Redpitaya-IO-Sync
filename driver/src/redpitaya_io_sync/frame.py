@@ -6,11 +6,11 @@ from .io.sync import TriggerSource
 PREALLOCATION_BLOCK_LEN = 0x10000
 
 class IoSyncFrame:
-    def __init__(self, device_type, trig: int | None = None):
+    def __init__(self, device_type, trig: TriggerSource | None = None):
         if trig is None:
             trig = TriggerSource.NONE
-        if trig not in TriggerSource.__dict__.values():
-            raise Exception(f"Trigger source {trig} is not valid. Valid sources are: {list(TriggerSource.__dict__.values())}.")
+        if trig not in TriggerSource:
+            raise Exception(f"Trigger source {trig} is not valid. Should be of type TriggerSource or None.")
         self._device_type = device_type
         self._trig = trig
         self._io_dict = {}

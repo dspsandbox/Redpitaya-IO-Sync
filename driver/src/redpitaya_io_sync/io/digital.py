@@ -1,6 +1,7 @@
+from enum import Enum
 from .base import BaseIo
 
-class DigitalIoCmd:
+class DigitalIoCmd(Enum):
     OUTPUT = 0x0
     TRISTATE = 0x1
 
@@ -9,9 +10,9 @@ class DigitalIo(BaseIo):
         super().__init__(addr, clk_freq)
 
     def output(self, val: int, mask: int = 0xffff):
-        self._add_instruction(cmd=DigitalIoCmd.OUTPUT,  data=((mask << 16) | val))
+        self._add_instruction(cmd=DigitalIoCmd.OUTPUT.value,  data=((mask << 16) | val))
         
     def tristate(self, val: int, mask: int = 0xffff):
-        self._add_instruction(cmd=DigitalIoCmd.TRISTATE, data=((mask << 16) | val))
+        self._add_instruction(cmd=DigitalIoCmd.TRISTATE.value, data=((mask << 16) | val))
 
     

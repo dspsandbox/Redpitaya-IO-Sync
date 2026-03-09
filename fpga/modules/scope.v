@@ -19,7 +19,8 @@ module scope#(
     localparam INSTR_CMD_WIDTH = 4,
     localparam INSTR_DATA_WIDTH = 32,
     localparam SCOPE_WIDTH = 16,
-    localparam COUNTER_WIDTH = 24
+    localparam SAMPLES_WIDTH = 32,
+    localparam DEC_WIDTH = 32
 
 )(
     input clk,
@@ -51,9 +52,9 @@ module scope#(
 );
 
     //instruction commands
-    localparam CMD_SRC = 'h0, CMD_ACQ = 'h1;
-    reg [COUNTER_WIDTH-1:0] counter;
-    reg [COUNTER_WIDTH-1:0] counter_max;
+    localparam CMD_SRC = 'h0, CMD_ACQ = 'h1, CMD_DEC = 'h2;
+    reg [SAMPLES_WIDTH-1:0] samples;
+    reg [DEC_WIDTH-1:0] dec;
     reg [3 : 0] src;
 
 
