@@ -48,63 +48,69 @@ module scope#(
     input [DATA_15_WIDTH-1:0] data_15,
     
     output reg [SCOPE_WIDTH-1:0] scope_tdata,
-    output reg scope_tvalid
+    output wire scope_tvalid,
+    output reg trig,
+    output reg [SAMPLES_WIDTH-1:0] samples,
+    output reg [DEC_WIDTH-1:0] dec
 );
 
     //instruction commands
     localparam CMD_SRC = 'h0, CMD_ACQ = 'h1, CMD_DEC = 'h2;
-    reg [SAMPLES_WIDTH-1:0] samples;
-    reg [DEC_WIDTH-1:0] dec;
+    
     reg [3 : 0] src;
-
-
 
     always @(posedge clk) begin
         if(resetn == 0) begin
             src <= 0;
-            counter_max <= 0;
+            trig <= 0;
+            samples <= 1;
+            dec <= 1;
         end else begin
             if((en==1) && (instr_valid == 1)) begin
                 case(instr_cmd)
                     CMD_SRC: begin
-                        src <= instr_data[3:0];
-                        counter_max <= counter_max;
+                        src <= instr_data[3 : 0];
+                        trig <= 0;
+                        samples <= samples;
+                        dec <= dec;
                     end
                     CMD_ACQ: begin
-                        counter_max <= counter_max + instr_data[COUNTER_WIDTH-1:0];
                         src <= src;
+                        trig <= 1;
+                        samples <= instr_data[SAMPLES_WIDTH - 1 : 0];
+                        dec <= dec;
+                    end
+                    
+                    CMD_DEC: begin
+                        src <= src;
+                        trig <= 0;
+                        samples <= samples;
+                        dec <= instr_data[DEC_WIDTH - 1 : 0];
                     end
                     default: begin
                         src <= src;
-                        counter_max <= counter_max;
+                        trig <= 0;
+                        samples <= samples;
+                        dec <= dec;
                     end
                 endcase
 
             end else begin
                 src <= src;
-                counter_max <= counter_max;
+                trig <= 0;
+                samples <= samples;
+                dec <= dec;
             end
         end
     end
 
     
+    assign scope_tvalid = 1;
     always @(posedge clk) begin
         if(resetn == 0) begin
             scope_tdata <= 0;
-            scope_tvalid <= 0;
         end
         else begin
-            //tvalid
-            if ((en==1) && (counter != counter_max)) begin
-                scope_tvalid <= 1;
-                counter <= counter + 1;
-
-            end else begin
-                counter <= counter_max;
-                scope_tvalid <= 0;
-            end
-
-            //tdata
             case(src) 
                 0: scope_tdata <= data_0;
                 1: scope_tdata <= data_1;
@@ -126,5 +132,7 @@ module scope#(
             endcase
         end
     end
+    
+    
 
 endmodule

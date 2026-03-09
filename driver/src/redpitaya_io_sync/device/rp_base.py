@@ -50,7 +50,7 @@ class Rp_base():
         for addr_name in self.ADDR_DICT.keys():
             if addr_name.startswith(DMA_MARKER) and ("instr" in addr_name or "scope" in addr_name):
                 key = addr_name[len(DMA_MARKER):]
-                self._dma_dict[key] = DMA(addr=self.ADDR_DICT[f"dma_{key}"], write_mem=self._write_mem, read_mem=self._read_mem)
+                self._dma_dict[key] = DMA(addr=self.ADDR_DICT[f"dma_{key}"], tcp_ctrl_client=self._tcp_ctrl_client)
 
 
     def _check_attribute(self, attr):
@@ -101,7 +101,7 @@ class Rp_base():
                             raise Exception(f"Frame {label} ({self._get_uid()}) exceeds available {scope_label} memory ({self.MMAP_DICT[f'mem_{scope_label}']['size']} bytes).")
                 
                 #Append frame
-                self._write_mem(addr=self._ptr_dict["instr"], data=instr_list_bytes)
+                self._tcp_ctrl_client.write(addr=self._ptr_dict["instr"], val=instr_list_bytes)
 
                 #Append frame metadata
                 self._frame_dict[label] = frame
@@ -129,10 +129,10 @@ class Rp_base():
         
 
     def _get_status(self):
-        en = bool(self._read_mem(addr=self.ADDR_DICT["reg_bank_en"]))
-        sync_counter = self._read_mem(addr=self.ADDR_DICT["reg_bank_sync_counter"])
-        err_code = self._read_mem(addr=self.ADDR_DICT["reg_bank_err"])
-        done_code = self._read_mem(addr=self.ADDR_DICT["reg_bank_done"])
+        en = bool(self._tcp_ctrl_client.read(addr=self.ADDR_DICT["reg_bank_en"]))
+        sync_counter = self._tcp_ctrl_client.read(addr=self.ADDR_DICT["reg_bank_sync_counter"])
+        err_code = self._tcp_ctrl_client.read(addr=self.ADDR_DICT["reg_bank_err"])
+        done_code = self._tcp_ctrl_client.read(addr=self.ADDR_DICT["reg_bank_done"])
         frame_label_list = list(self._frame_dict.keys())
         frame_label = frame_label_list[sync_counter - 1] if sync_counter > 0 else None
         io_status = {}
@@ -182,10 +182,10 @@ class Rp_base():
         for key in self._dma_dict.keys():
             if "scope" in key:
                 nbytes = self._ptr_dict[key] - self.MMAP_DICT[f"mem_{key}"]["addr"]
-                self._write_mem(addr=self.ADDR_DICT[f"reg_bank_{key}_samples"], data=nbytes//2) 
+                self._tcp_ctrl_client.write(addr=self.ADDR_DICT[f"reg_bank_{key}_samples"], val=nbytes//2) 
         
         #Assert enable bit
-        self._write_mem(addr=self.ADDR_DICT["reg_bank_en"], data=0x1)
+        self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_en"], val=0x1)
 
         
 
@@ -200,23 +200,17 @@ class Rp_base():
             dma_ch.start()
 
         #Deassert enable bit
-        self._write_mem(addr=self.ADDR_DICT["reg_bank_en"], data=0x0)
+        self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_en"], val=0x0)
 
         #Flush fifos
-        self._write_mem(addr=self.ADDR_DICT["reg_bank_flush"], data=0x1)
+        self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_flush"], val=0x1)
         time.sleep(1e-3)
-        self._write_mem(addr=self.ADDR_DICT["reg_bank_flush"], data=0x0)
+        self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_flush"], val=0x0)
         return
     
     def _get_uid(self):
         uid = f"{self._label}@{self._ip}"
         return uid
-
-    def _write_mem(self, addr, data):
-        self._tcp_ctrl_client.write(addr=addr, val=data)   
-
-    def _read_mem(self, addr, dtype=np.uint32, size=1):
-        return self._tcp_ctrl_client.read(addr=addr, dtype=dtype, size=size)
 
     def _get_scope(self):
         scope_dict = {}
@@ -233,7 +227,7 @@ class Rp_base():
                     t = acq_dict[scope_label][acq_label]["t"]
                     src = acq_dict[scope_label][acq_label]["src"]
                     dec = acq_dict[scope_label][acq_label]["dec"]
-                    data = self._read_mem(addr=addr, size=(samples), dtype=np.int16)
+                    data = self._tcp_ctrl_client.read(addr=addr, size=(samples), dtype=np.int16)
                     scope_dict[frame_label] [scope_label][acq_label] = {"t": t, "src": src, "dec": dec, "samples": samples, "data": data}
         return scope_dict
     
