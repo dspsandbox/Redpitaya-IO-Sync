@@ -3,6 +3,7 @@ module stream_dec #(
 )(
     input clk,
     input resetn,
+    input trig,
     input [31 : 0] dec,
     input [DATA_WIDTH - 1 : 0] stream_i_tdata,
     input stream_i_tvalid,
@@ -11,17 +12,16 @@ module stream_dec #(
     output stream_o_tvalid,
     input stream_o_tready
 );
-   
     reg [31 : 0] counter;
 
     always @(posedge clk) begin
         if(resetn == 0) begin
             counter <= 1;
         end else begin
-            if(counter < dec) begin
-                counter <= counter + 1;
-            end else begin
+            if((counter >= dec) || (trig == 1)) begin
                 counter <= 1;
+            end else begin
+                counter <= counter + 1;
             end
         end
     end
