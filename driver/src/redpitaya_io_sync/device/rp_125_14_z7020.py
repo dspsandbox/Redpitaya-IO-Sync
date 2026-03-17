@@ -47,6 +47,6 @@ class Rp_125_14_Z7020(Rp_base):
     }
     BITSTREAM = os.path.join(os.path.dirname(__file__), "../bitstream/io_sync_rp_125_14_z7020.bit")
     
-    def __init__(self, ip: str, label: str = "rp_125_14_z7020"):
-        super().__init__(ip, label)
+    def __init__(self, ip: str, label: str = "rp_125_14_z7020", force: bool = False):
+        super().__init__(ip, label, force)
 

@@ -5,7 +5,8 @@ module analog #(
     localparam AMPL_WIDTH = 16,
     localparam PHASE_WIDTH = 32,
     localparam INSTR_CMD_WIDTH = 4,
-    localparam INSTR_DATA_WIDTH = 32
+    localparam INSTR_DATA_WIDTH = 32,
+    parameter AMPL_LATENCY = 8
     
 )(
     input clk,
@@ -90,27 +91,43 @@ module analog #(
         
     end
 
+    reg [AMPL_WIDTH-1:0] ampl_delay_line [0:AMPL_LATENCY-1];
+    integer i;
 
-    //Transfer from internal registers to output when UPDATE=1
+
+   
+
+    //Transfer from internal registers to output when UPDATE=1. Additional latency logic for amplitude output
     always @(posedge clk) begin
         if(resetn==0) begin
             ampl <= AMPL_DEFAULT;
             ph_off <= PHASE_OFF_DEFAULT;
             ph_inc <= PHASE_INCR_DEFAULT;
             ph_rst <= 0;
-            
+
+            for (i = 0; i < AMPL_LATENCY; i = i + 1) begin
+                ampl_delay_line[i] <= AMPL_DEFAULT;
+            end
+
         end else begin
             if (update_reg == 1) begin
-                ampl <= ampl_reg;
+                ampl_delay_line[0] <= ampl_reg;
                 ph_off <= ph_off_reg;
                 ph_inc <= ph_inc_reg;
                 ph_rst <= ph_rst_reg;
             end else begin
-                ampl <= ampl;
+                ampl_delay_line[0] <= ampl_delay_line[0];
                 ph_off <= ph_off;
                 ph_inc <= ph_inc;
                 ph_rst <= ph_rst;
             end
+
+            ampl <= ampl_delay_line[AMPL_LATENCY-1];
+            for (i = 1; i < AMPL_LATENCY; i = i + 1) begin
+                ampl_delay_line[i] <= ampl_delay_line[i-1];
+            end
+
+            
 
         end
     end

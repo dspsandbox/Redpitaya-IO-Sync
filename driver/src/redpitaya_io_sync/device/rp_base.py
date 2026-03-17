@@ -6,7 +6,7 @@ from ..dma.dma import DMA
 
 
 class Rp_base():
-    def __init__(self, ip: str, label: str):
+    def __init__(self, ip: str, label: str, force: bool):
         self._ip = ip
         self._label = label
         self._check_attribute("CLK_FREQ")
@@ -19,7 +19,7 @@ class Rp_base():
         self._init_tcp_ctrl_client()
         self._init_mmap()
 
-        self.load_bitstream(force=False)
+        self._load_bitstream(force=force)
 
         self._frame_dict = {}
         self._ptr_dict = {} 
@@ -57,7 +57,7 @@ class Rp_base():
         if not hasattr(self, attr):
             raise Exception(f"Attribute {attr} not found. Please define {attr} in the device subclass.")
 
-    def load_bitstream(self, force=False):
+    def _load_bitstream(self, force=False):
         self._tcp_ctrl_client.load_bitstream(path=self.BITSTREAM, force=force)
         
     def _reset(self):
@@ -72,7 +72,7 @@ class Rp_base():
         if label is None:
             label = f"frame_{len(self._frame_dict)}"
         if label in self._frame_dict:
-            raise Exception(f"Frame label {label} already exists in device {self._get_uid()}. Please provide a unique label for each frame.")
+            raise Exception(f"Frame label {label} already exists in device {self.get_uid()}. Please provide a unique label for each frame.")
         self._frame_dict[label] = frame
 
         
@@ -89,7 +89,7 @@ class Rp_base():
                 instr_list_bytes = instr_list.tobytes()
                 instr_list_size = len(instr_list_bytes)
                 if self._ptr_dict["instr"] + instr_list_size > self.MMAP_DICT["mem_instr"]["addr"] + self.MMAP_DICT["mem_instr"]["size"]:
-                    raise Exception(f"Frame {label} ({self._get_uid()}) exceeds available instruction memory ({self.MMAP_DICT['mem_instr']['size']} bytes).")
+                    raise Exception(f"Frame {label} ({self.get_uid()}) exceeds available instruction memory ({self.MMAP_DICT['mem_instr']['size']} bytes).")
                 
                 #Check scope memory size
                 acq_dict = frame._get_acquisition_dict()
@@ -98,7 +98,7 @@ class Rp_base():
                         acq_samples = acq_dict[scope_label][acq_label]["samples"]
                         acq_size = acq_samples * np.int16().nbytes  
                         if (self._ptr_dict[scope_label] + acq_size) > (self.MMAP_DICT[f"mem_{scope_label}"]["addr"] + self.MMAP_DICT[f"mem_{scope_label}"]["size"]):
-                            raise Exception(f"Frame {label} ({self._get_uid()}) exceeds available {scope_label} memory ({self.MMAP_DICT[f'mem_{scope_label}']['size']} bytes).")
+                            raise Exception(f"Frame {label} ({self.get_uid()}) exceeds available {scope_label} memory ({self.MMAP_DICT[f'mem_{scope_label}']['size']} bytes).")
                 
                 #Append frame
                 self._tcp_ctrl_client.write(addr=self._ptr_dict["instr"], val=instr_list_bytes)
@@ -208,7 +208,7 @@ class Rp_base():
         self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_flush"], val=0x0)
         return
     
-    def _get_uid(self):
+    def get_uid(self):
         uid = f"{self._label}@{self._ip}"
         return uid
 

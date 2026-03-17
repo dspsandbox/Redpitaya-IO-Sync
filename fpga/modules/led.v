@@ -16,7 +16,7 @@ module led #(
 
 );
     //instruction commands
-    localparam CMD_WRITE = 'h0;
+    localparam CMD_OUTPUT = 'h0;
 
     wire [LED_WIDTH-1:0] val;
     wire [LED_WIDTH-1:0] mask;
@@ -30,7 +30,7 @@ module led #(
         end else begin
             if ((en == 1) && (instr_valid==1)) begin
                 case(instr_cmd)
-                    CMD_WRITE: begin
+                    CMD_OUTPUT: begin
                         led_o <= (led_o & ~mask) | (val & mask);
                     end
     

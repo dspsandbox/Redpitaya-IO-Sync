@@ -1,4 +1,5 @@
 module instr_breakout#(
+    parameter LATENCY = 0,
     localparam INSTR_WIDTH = 64,
     localparam INSTR_CMD_LSB = 56,
     localparam INSTR_CMD_MSB = 59,
@@ -44,7 +45,7 @@ module instr_breakout#(
     //output signals
     assign done = (en == 1) && (state == IDLE);
     assign error = (en == 1) && (state == ERROR);
-    assign S00_AXIS_tready = ((en == 1) && (state == RUNNING) && (time_i == time_counter)) || (flush_fifo == 1);
+    assign S00_AXIS_tready = ((en == 1) && (state == RUNNING) && ((time_i + LATENCY) == time_counter)) || (flush_fifo == 1);
 
 
     always @(posedge clk) begin

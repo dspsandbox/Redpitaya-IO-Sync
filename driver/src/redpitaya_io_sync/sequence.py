@@ -10,7 +10,7 @@ class IoSequence():
         self._rsync_label_list= []
         self._device_dict = {}
         for device in device_list:
-            device_uid = device._get_uid()
+            device_uid = device.get_uid()
             if device_uid in self._device_dict:
                 raise Exception(f"Device {device_uid} already exists in sequence. Please make sure all devices in the device list have unique UIDs.")
             self._device_dict[device_uid] = device
@@ -31,9 +31,9 @@ class IoSequence():
         if not issubclass(type(device), Rp_base):
                 raise Exception(f"Provided device attribute is not a valid device instance.")
         if not isinstance(device, frame._device_type):
-            raise Exception(f"Provided device ({device._get_uid()}) is not an instance of the frame device class ({frame._device_type.__name__}).")
+            raise Exception(f"Provided device ({device.get_uid()}) is not an instance of the frame device class ({frame._device_type.__name__}).")
         if device not in self._device_dict.values():
-            raise Exception(f"Provided device ({device._get_uid()}) is not in the sequence device list.")        
+            raise Exception(f"Provided device ({device.get_uid()}) is not in the sequence device list.")        
 
         device._add_frame(frame, label)
         

@@ -10,6 +10,7 @@ module stream_ctrl #(
     input [SAMPLES_WIDTH-1:0] samples_total,
     input trig, 
     input [SAMPLES_WIDTH-1:0] samples,
+    input [SAMPLES_WIDTH-1:0] dec,
     input [DATA_WIDTH - 1 : 0] stream_i_tdata,
     input stream_i_tvalid,
     output stream_i_tready,
@@ -21,37 +22,47 @@ module stream_ctrl #(
     
     localparam IDLE=0, RUNNING=1, ERROR=2;
     reg [0 : 1] state;
-    reg [SAMPLES_WIDTH-1 : 0] counter;
-    reg [SAMPLES_WIDTH-1 : 0] counter_total;
+    reg [SAMPLES_WIDTH-1 : 0] counter_samples;
+    reg [SAMPLES_WIDTH-1 : 0] counter_samples_total;
+    reg [SAMPLES_WIDTH-1 : 0] counter_dec;
     
-    
+    wire input_ok;
+    wire output_ok;
+    wire dec_ok;
+    wire last_sample;
+    wire last_sample_total;
+    wire samples_total_ok;
+
+    assign input_ok = stream_i_tvalid;
+    assign dec_ok = (counter_dec == 1) ? 1 : 0;
+    assign output_ok = stream_o_tready;
+    assign last_sample = (counter_samples == samples) ? 1 : 0;
+    assign last_sample_total = (counter_samples_total == samples_total) ? 1 : 0;
+    assign samples_total_ok = (counter_samples_total <= samples_total) ? 1 : 0;
 
 
+    //State machine for stream control
     always @(posedge clk) begin
         if ((resetn == 0) || (en == 0)) begin
             state <= IDLE;
-            counter <= 1;
-            counter_total <= 1;
-            
         end else begin
             case(state)
                 IDLE: begin
-                    counter <= 1;
                     if(trig == 1) begin
                         state <= RUNNING;
+                    end else begin
+                        state <= IDLE;
                     end 
                 end
 
-                RUNNING: begin 
-                    if((trig == 1) || ((stream_i_tvalid == 1) && (stream_o_tready == 0))) begin
+                RUNNING: begin                
+                    if((trig == 1) || ((input_ok == 1) && (output_ok == 0) && (dec_ok == 1)) || (samples_total_ok == 0)) begin //If a new trigger is received while running, or if the output is not ready when it should be, or if the total number of samples exceeds the configured total, go to error state
                         state <= ERROR;
                     end else begin
-                        if((stream_i_tvalid == 1) && (stream_o_tready == 1)) begin
-                            counter <= counter + 1;
-                            counter_total <= counter_total + 1;
-                            if(counter == samples) begin
-                                state <= IDLE;
-                            end
+                        if((input_ok == 1) && (output_ok == 1) && (dec_ok == 1) && (last_sample == 1)) begin //If the last sample of the acquisition is reached, go back to idle state
+                            state <= IDLE;
+                        end else begin
+                            state <= RUNNING;
                         end
                     end
                 end
@@ -67,10 +78,57 @@ module stream_ctrl #(
         end
     end
 
+
+
+    //state machine for sample counting
+    always @(posedge clk) begin
+        if ((resetn == 0) || (en == 0)) begin
+            counter_samples <= 1;
+            counter_samples_total <= 1;
+        end else begin
+            case(state)
+                IDLE: begin
+                    counter_samples <= 1;
+                    counter_samples_total <= counter_samples_total;
+                end
+
+                RUNNING: begin                
+                    if((input_ok == 1) && (output_ok == 1) && (dec_ok == 1)) begin
+                        counter_samples <= counter_samples + 1;
+                        counter_samples_total <= counter_samples_total + 1;
+                    end else begin
+                        counter_samples <= counter_samples;
+                        counter_samples_total <= counter_samples_total;
+                    end
+                end
+
+                default: begin
+                    counter_samples <= counter_samples;
+                    counter_samples_total <= counter_samples_total;
+                end 
+            endcase
+        end
+    end
+
+
+    //state machine for decimation counting
+    always @(posedge clk) begin
+        if ((resetn == 0) || (en == 0)) begin
+            counter_dec <= 1;
+        end else begin
+            if ((trig == 1) || (counter_dec >= dec)) begin
+                counter_dec <= 1;
+            end else begin
+                counter_dec <= counter_dec + 1;
+            end 
+        end
+    end
+
+
     assign stream_o_tdata = stream_i_tdata;
-    assign stream_o_tvalid = (state == RUNNING) ? stream_i_tvalid : 0;
-    assign stream_i_tready = (state == RUNNING) ? stream_o_tready : 0;
-    assign stream_o_tlast = ((state == RUNNING) && (counter_total == samples_total)) ? 1 : 0;
+    assign stream_o_tvalid = ((state == RUNNING) && (input_ok == 1) && (dec_ok == 1)) ? 1 : 0;
+    assign stream_i_tready = ((state == RUNNING) && (input_ok == 1) && (dec_ok == 1)) ? 1 : 0;
+    assign stream_o_tlast = last_sample_total;
     assign err_o = (state == ERROR) || (err_i == 1) ? 1 : 0;
 
 endmodule

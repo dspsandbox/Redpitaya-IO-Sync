@@ -12,13 +12,13 @@ PREALLOCATION_BLOCK_LEN = 0x1000
 
 class BaseIo():
     _requires_done_instruction = True #Whether the IO requires a DONE instruction at the end of the instruction list
+    _t_overflow = (1 << 24) - 32 #Number of clk cycles after which time value overflows (set to 2^24 - margin for latency compensations)
 
     def __init__(self, addr, clk_freq):
         self._addr = addr
         self._clk_freq = clk_freq
         self._tlast = -1
         self._tnext = 0
-        self._tdone=0
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
@@ -29,7 +29,6 @@ class BaseIo():
     def reset(self):
         self._tlast = -1
         self._tnext = 0
-        self._tdone = 0
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
@@ -37,20 +36,18 @@ class BaseIo():
         self._locked = False
 
     def _add_instruction(self, cmd: int, data: int, duration: int = 1):
-        if self._locked:
-            raise Exception("Cannot add instruction because the instruction list is locked. Please reset instruction list.")
         #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
         #Addr    |   Cmd   |   Time  |   Data
-
-        if cmd == BaseIoCmd.DONE.value:
-            t = self._tdone
-        else:
-            t = self._tnext
-
-        #Insert NOP instructions every 2^24 clk cycles (if needed)
-        while (t - self._tlast) > (1<<24):
-            self._tnext = self._tlast + (1 << 24)
-            self._add_instruction(cmd=BaseIoCmd.NOP.value, data=0, duration=(1 << 24))
+        
+        if self._locked:
+            raise Exception("Cannot add instruction because the instruction list is locked. Please reset instruction list.")
+        
+        t = self._tnext
+        
+        #Insert NOP instructions every t_overflow clk cycles (if needed)
+        while (t - self._tlast) > self._t_overflow:
+            self._tnext = self._tlast + self._t_overflow
+            self._add_instruction(cmd=BaseIoCmd.NOP.value, data=0, duration=self._t_overflow)
 
         #Preallocate more space if needed
         if self._idx >= self._preallocation_len:
@@ -68,7 +65,6 @@ class BaseIo():
         self._idx += 1
         self._tlast = t
         self._tnext = t + duration
-        self._tdone = t + duration
 
         #Set lock
         if cmd == BaseIoCmd.DONE.value:
@@ -82,9 +78,7 @@ class BaseIo():
             #Add DONE instruction at the end of the instruction list if required
             if self._requires_done_instruction:
                 self._add_instruction(cmd=BaseIoCmd.DONE.value, data=0)
-            
-           
-
+                
         instr_list = self._instr_list[:self._idx]
         t_list = self._t_list[:self._idx]
         return instr_list, t_list
