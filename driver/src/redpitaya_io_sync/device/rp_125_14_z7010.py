@@ -1,7 +1,7 @@
 from .rp_base import Rp_base
-from ..io.analog import AnalogIn, AnalogOut
+from ..io.rf import RfIn, RfOut
 from ..io.digital import DigitalIo
-from ..io.pwm import Pwm
+from ..io.analog import AnalogOut
 from ..io.scope import Scope
 from ..io.sync import Sync    
 from ..io.led import Led
@@ -10,18 +10,18 @@ import os
 class Rp_125_14_Z7010(Rp_base):
     CLK_FREQ = 125e6
     IO_DICT = {
-        "analog_out_1": {"class": AnalogOut, "addr": 0x0},
-        "analog_out_2": {"class": AnalogOut, "addr": 0x1},
-        #"analog_in_1": {"class": AnalogIn, "addr": 0x2}, #TODO: Implement configurable analog input 1
-        #"analog_in_2": {"class": AnalogIn, "addr": 0x3}, #TODO: Implement configurable analog input 2
+        "rf_out_1": {"class": RfOut, "addr": 0x0},
+        "rf_out_2": {"class": RfOut, "addr": 0x1},
+        #"rf_in_1": {"class": RfIn, "addr": 0x2}, #TODO: Implement configurable RF input 1
+        #"rf_in_2": {"class": RfIn, "addr": 0x3}, #TODO: Implement configurable RF input 2
         "digital_io_1": {"class": DigitalIo, "addr": 0x4},
         "digital_io_2": {"class": DigitalIo, "addr": 0x5},
         "digital_io_3": {"class": DigitalIo, "addr": 0x6},
         "digital_io_4": {"class": DigitalIo, "addr": 0x7},
-        "pwm_1": {"class": Pwm, "addr": 0x8},
-        "pwm_2": {"class": Pwm, "addr": 0x9},
-        "pwm_3": {"class": Pwm, "addr": 0xA},
-        "pwm_4": {"class": Pwm, "addr": 0xB},
+        "analog_out_1": {"class": AnalogOut, "addr": 0x8},
+        "analog_out_2": {"class": AnalogOut, "addr": 0x9},
+        "analog_out_3": {"class": AnalogOut, "addr": 0xA},
+        "analog_out_4": {"class": AnalogOut, "addr": 0xB},
         "scope_1": {"class": Scope, "addr": 0xC},    
         "scope_2": {"class": Scope, "addr": 0xD},
         "led": {"class": Led, "addr": 0xE},

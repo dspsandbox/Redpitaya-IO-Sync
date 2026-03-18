@@ -8,22 +8,22 @@ class ScopeCmd(Enum):
     DEC = 0x2
 
 class ScopeSource(Enum):
-    ANALOG_IN_1 = 0x0
-    ANALOG_IN_2 = 0x1
-    ANALOG_OUT_1 = 0x2
-    ANALOG_OUT_2 = 0x3
+    RF_IN_1 = 0x0
+    RF_IN_2 = 0x1
+    RF_OUT_1 = 0x2
+    RF_OUT_2 = 0x3
     DIGITAL_IO_1 = 0x4
     DIGITAL_IO_2 = 0x5
     DIGITAL_IO_3 = 0x6
     DIGITAL_IO_4 = 0x7
-    PWM_1 = 0x8
-    PWM_2 = 0x9
-    PWM_3 = 0xA
-    PWM_4 = 0xB
-    XADC_1 = 0xC
-    XADC_2 = 0xD
-    XADC_3 = 0xE
-    XADC_4 = 0xF
+    ANALOG_OUT_1 = 0x8
+    ANALOG_OUT_2 = 0x9
+    ANALOG_OUT_3 = 0xA
+    ANALOG_OUT_4 = 0xB
+    ANALOG_IN_1 = 0xE
+    ANALOG_IN_2 = 0xC
+    ANALOG_IN_3 = 0xD
+    ANALOG_IN_4 = 0xF
     
 
 class Scope(BaseIo):
@@ -31,7 +31,7 @@ class Scope(BaseIo):
         super().__init__(addr, clk_freq)
         self._acq_dict = {}
         self._acq_samples = 0
-        self._src = ScopeSource.ANALOG_IN_1
+        self._src = ScopeSource.RF_IN_1
         self._dec = 1
 
 

@@ -32,8 +32,8 @@ module tdata_breakout #(
 
     assign S00_AXIS_tready = M00_AXIS_tready;
     assign M00_AXIS_tvalid = S00_AXIS_tvalid;
-    assign M00_AXIS_tdata = S00_AXIS_tvalid ? S00_AXIS_tdata : tdata_reg;
+    assign M00_AXIS_tdata = S00_AXIS_tdata;
     assign M00_AXIS_tlast = S00_AXIS_tlast;
-    assign tdata = S00_AXIS_tdata;
+    assign tdata = S00_AXIS_tvalid ? S00_AXIS_tdata : tdata_reg;
 
     endmodule
