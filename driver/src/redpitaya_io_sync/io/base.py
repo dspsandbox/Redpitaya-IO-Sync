@@ -17,8 +17,9 @@ class BaseIo():
     def __init__(self, addr, clk_freq):
         self._addr = addr
         self._clk_freq = clk_freq
-        self._tlast = -1
+        self._tlast = 0
         self._tnext = 0
+        self._tincr = 1
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
@@ -27,21 +28,26 @@ class BaseIo():
     
     
     def reset(self):
-        self._tlast = -1
+        self._tlast = 0
         self._tnext = 0
+        self._tincr = 1
         self._t_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._instr_list = np.zeros(PREALLOCATION_BLOCK_LEN, dtype=np.uint64)
         self._idx = 0
         self._preallocation_len = PREALLOCATION_BLOCK_LEN
         self._locked = False
 
-    def _add_instruction(self, cmd: int, data: int, duration: int = 1):
-        #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
-        #Addr    |   Cmd   |   Time  |   Data
-        
+    def _add_instruction(self, cmd: int, data: int, duration: int = 1):        
+        #Check if instruction list is locked
         if self._locked:
             raise Exception("Cannot add instruction because the instruction list is locked. Please reset instruction list.")
         
+        #Map to uint64
+        cmd = np.uint64(cmd)
+        data = np.uint64(data)
+        duration = np.uint64(duration)
+
+        #Assign time for instruction
         t = self._tnext
         
         #Insert NOP instructions every t_overflow clk cycles (if needed)
@@ -57,6 +63,8 @@ class BaseIo():
             self._preallocation_len += PREALLOCATION_BLOCK_LEN
 
         #Create new instruction
+        #63 - 60 | 59 - 56 | 55 - 32 | 31 - 0
+        #Addr    |   Cmd   |   Time  |   Data
         instr = ((self._addr << 60) | (cmd << 56) | ((t & 0xffffff) << 32) | data)
         
         #Add instruction to list
@@ -64,27 +72,24 @@ class BaseIo():
         self._t_list[self._idx] = t
         self._idx += 1
         self._tlast = t
-        self._tnext = t + duration
+        self._tnext = t + max(duration, self._tincr)
 
-        #Set lock
-        if cmd == BaseIoCmd.DONE.value:
-            self._locked = True
         return 
 
+    def _add_done_instruction(self):
+        self._add_instruction(cmd=BaseIoCmd.DONE.value, data=0)
+        self._locked = True
 
     def _get_instruction_and_time_list(self):
-        
         if not self._locked:
-            #Add DONE instruction at the end of the instruction list if required
             if self._requires_done_instruction:
-                self._add_instruction(cmd=BaseIoCmd.DONE.value, data=0)
+                self._add_done_instruction()
+                instr_list = self._instr_list[:self._idx]
                 
         instr_list = self._instr_list[:self._idx]
         t_list = self._t_list[:self._idx]
-        return instr_list, t_list
-    
-    def _get_time_list(self):
-        return self._t_list[:self._idx]
+        return instr_list, t_list  
+
 
     def get_time(self):
         return self._tnext
@@ -92,14 +97,23 @@ class BaseIo():
     def set_time(self, val: int):
         if val < self._tnext:
             raise Exception(f"Cannot set time to {val} because it is smaller than current time {self._tnext}.")
-        self._tnext = val
+        self._tnext = np.uint64(val)
+    def set_time_increment(self, val: int):
+        if val <= 0:
+            raise Exception(f"Time increment must be a positive integer. Got {val} instead.")
+        self._tincr = np.uint64(val)
 
-    def wait(self, val: int = 0):
+    def get_time_increment(self):
+        return self._tincr
+    
+    def delay(self, val: int = 0):
         t = self.get_time()
         self.set_time(t + val)
 
     def _is_locked(self):
         return self._locked
+    
+
     
 
 

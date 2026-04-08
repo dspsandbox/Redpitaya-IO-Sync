@@ -146,6 +146,12 @@ class IoSequence():
     
     def is_error(self):
         return any(device_status["error"] for device_status in self.get_status().values())
+    
+    def wait(self):
+        while not self.is_done():
+            if self.is_error():
+                raise Exception("Sequence error, please check state")
+            
 
     def stop(self):
         for device in self._device_dict.values():

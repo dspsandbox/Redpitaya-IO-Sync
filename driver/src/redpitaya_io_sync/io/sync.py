@@ -27,4 +27,5 @@ class Sync (BaseIo):
         if src not in TriggerSource:
             raise Exception(f"Trigger source {src} is not valid. Should be of type TriggerSource or None.")
         self._add_instruction(cmd=SyncCmd.TrigSrc.value, data=src.value)
+        self._locked = True
 

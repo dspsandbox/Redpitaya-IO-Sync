@@ -31,14 +31,16 @@ class Scope(BaseIo):
         super().__init__(addr, clk_freq)
         self._acq_dict = {}
         self._acq_samples = 0
-        self._src = ScopeSource.RF_IN_1
-        self._dec = 1
+        self._src = None
+        self._dec = None
 
 
     def reset(self):
         super().reset()
         self._acq_dict = {}
         self._acq_samples = 0
+        self._src = None
+        self._dec = None
 
     def source(self, src: ScopeSource):
         if src not in ScopeSource:
@@ -56,13 +58,18 @@ class Scope(BaseIo):
         self._dec = dec
 
 
-    def acquire(self, samples: int, label: str | None = None):
+    def acquire(self, samples: int, label: str | None = None, run_async: bool = False):
         #Check Scope parameters
         SAMPLE_MIN = 1
         SAMPLE_MAX = (1 << 32) - 1 
 
         if (samples < SAMPLE_MIN) or (samples > SAMPLE_MAX):
             raise Exception(f"Number of samples {samples} is out of range [{SAMPLE_MIN}, {SAMPLE_MAX}].")
+        
+        if self._src is None:
+            raise Exception("Scope source not set within current IoSyncFrame. Please set scope source before acquiring.")
+        if self._dec is None:
+            raise Exception("Scope decimation not set within current IoSyncFrame. Please set scope decimation before acquiring.")
         
         #Determine command type 
         cmd = ScopeCmd.ACQ.value
@@ -78,7 +85,12 @@ class Scope(BaseIo):
         #Add Scope instruction
         self._acq_dict[label] = {'t': self._tnext, 'samples': samples,'src': self._src.name, 'dec': self._dec, 'addr': None}
         self._acq_samples += samples
-        self._add_instruction(cmd=cmd, data=samples)
+
+        if run_async:
+            duration = 1
+        else:  
+            duration = samples * self._dec + 1
+        self._add_instruction(cmd=cmd, data=samples, duration=duration)
         
         
     def _get_acquisition_dict(self):

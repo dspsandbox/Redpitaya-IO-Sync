@@ -71,7 +71,7 @@ class _SDMAChannel:
         self._tcp_ctrl_client.write(self._offset + 0x28, nbytes)
         self._first_transfer = False
 
-    def wait(self):
+    def delay(self):
         """Wait for the transfer to complete"""
         if not self.running:
             raise RuntimeError("DMA channel not started")

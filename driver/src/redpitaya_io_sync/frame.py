@@ -109,13 +109,17 @@ class IoSyncFrame:
         for io in self._io_dict.values():
             io.set_time(t)
     
+    def set_time_increment(self, t_incr : int):
+        for io in self._io_dict.values():
+            io.set_time_increment(t_incr)
+    
     def rsync(self):
         tmax = max(io.get_time() for io in self._io_dict.values())
         self.set_time(tmax)
 
-    def wait(self, delay : int = 0):
+    def delay(self, delay : int = 0):
         for io in self._io_dict.values():
-            io.wait(delay)
+            io.delay(delay)
 
 
     def _get_acquisition_dict(self):
@@ -137,31 +141,37 @@ class ParametrizedIoSyncFrame():
         self._device_type = device_type
         self._trig = trig
         self._frame = IoSyncFrame(device_type=device_type, trig=trig)
-        self._frame_param = {}
-        self._frame_param_last = {}
+        self._frame_args = None
+        self._frame_kwargs = None
+        self._frame_args_last = None
+        self._frame_kwargs_last = None
         self._frame_func = None
 
     def reset(self):
         self._frame.reset()
-        self._frame_param = {}
-        self._frame_param_last = {}
+        self._frame_args = None
+        self._frame_kwargs = None
+        self._frame_args_last = None
+        self._frame_kwargs_last = None
         self._frame_func = None
 
-    def set_frame_parameter(self, name, val):
-        self._frame_param[name] = val
+    def set_frame_parameter(self, *args, **kwargs):
+        self._frame_args = args
+        self._frame_kwargs = kwargs
 
     def set_frame_function(self, func):
         self._frame.reset()
         self._frame_func = func
 
     def _is_locked(self):
-        return self._frame._is_locked() and (self._frame_param == self._frame_param_last) and (self._frame_func is not None)
+        return self._frame._is_locked() and (self._frame_args == self._frame_args_last) and (self._frame_kwargs == self._frame_kwargs_last) and (self._frame_func is not None)
     
     def _get_instruction_list(self):
         if not self._is_locked():
             self._frame.reset()
-            self._frame_func(self._frame, **copy.deepcopy(self._frame_param))
-            self._frame_param_last = copy.deepcopy(self._frame_param)
+            self._frame_func(self._frame, *copy.deepcopy(self._frame_args), **copy.deepcopy(self._frame_kwargs))
+            self._frame_args_last = copy.deepcopy(self._frame_args)
+            self._frame_kwargs_last = copy.deepcopy(self._frame_kwargs)
         return self._frame._get_instruction_list()
     
     def _get_acquisition_dict(self):
