@@ -37,14 +37,14 @@ Please install the Zynq TCP Control library (TCP-based control utilities for ZYN
 ## Supported IOs & Pin Mapping
 
 
+![](https://redpitaya.readthedocs.io/en/latest/_images/Red_Pitaya_pinout.jpg)
 
 
 
 
 
 
-
-|IO Name | RP-125 Pin Name | Description|
+|IO Name (Redpitaya-IO-Sync library) | Pin Name (see diagram above) | Description|
 |-|-|-|
 led[0-7] | LED_0-7 | User LEDs
 digital_io_0[0] | DIO0_P (trig ext) | Digital IO (3.3V) 
