@@ -32,16 +32,22 @@ Please install the Zynq TCP Control library (TCP-based control utilities for ZYN
     pip3 install -e .
 
     ```
+## Supported Devices
+* Redpitaya-125-14-Z10:
+    * STEMlab 125-14 (Gen 2)
+    * STEMlab 125-14 (Gen 1) 
+    * STEMlab 125-14 Low Noise (Gen 1)
+* Redpitaya-125-14-Z20:
+    * STEMlab 125-14 Pro (Gen 2)
+    * STEMlab 125-14 Z7020 Low Noise (Gen 1)
+    
+
+
 
 
 ## Supported IOs & Pin Mapping
 
-
 ![](https://redpitaya.readthedocs.io/en/latest/_images/Red_Pitaya_pinout.jpg)
-
-
-
-
 
 
 |IO Name (Redpitaya-IO-Sync library) | Pin Name (see diagram above) | Description|
@@ -67,22 +73,16 @@ analog_in_0 | Analog input 0 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
 analog_in_1 | Analog input 1 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
 analog_in_2 | Analog input 2 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
 analog_in_3 | Analog input 3 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
-analog_out_0 | Analog Output 0 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
-analog_out_1 | Analog Output 1 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
-analog_out_2 | Analog Output 2 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
-analog_out_3 | Analog Output 3 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
+analog_out_0 | Analog Output 0 | Slow analog output (0V-1.8V, 12-bit, fc = 190kHz)
+analog_out_1 | Analog Output 1 | Slow analog output (0V-1.8V, 12-bit, fc = 190kHz)
+analog_out_2 | Analog Output 2 | Slow analog output (0V-1.8V, 12-bit, fc = 190kHz)
+analog_out_3 | Analog Output 3 | Slow analog output (0V-1.8V, 12-bit, fc = 190kHz)
 rf_out_0 | OUT1 | Fast analog output (+/-1V, 14-bit, 125 MSa/s)
 rf_out_2 | OUT2 | Fast analog output (+/-1V, 14-bit, 125 MSa/s)
 rf_in_0 | IN1 | Fast analog input (+/-1V or +/-20V, 14-bit, 125 MSa/s)
 rf_in_1 | IN2 | Fast analog input (+/-1V or +/-20V, 14-bit, 125 MSa/s)
 daisy_0 | S1 | Synchronization connector (gen 1: SATA, gen 2: USB-C)
 daisy_1 | S2 | Synchronization connector (gen 1: SATA, gen 2: USB-C)
-
-
-
-
-
-
 
 
 

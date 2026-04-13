@@ -11,7 +11,8 @@ class AnalogOut(BaseIo):
     def duty_cycle(self, val: float):
         DUTY_CYCLE_MIN = 0.0
         DUTY_CYCLE_MAX = 1.0
+        MODULATION_DEPTH = 12
         if (val < DUTY_CYCLE_MIN) or (val > DUTY_CYCLE_MAX):
             raise Exception(f"Duty cycle value {val} is out of range [{DUTY_CYCLE_MIN}, {DUTY_CYCLE_MAX}].")
-        data = int(val * ((1 << 8) - 1))
+        data = int(val * ((1 << MODULATION_DEPTH) - 1))
         self._add_instruction(cmd=AnalogOutCmd.DUTY_CYCLE.value, data=data)
