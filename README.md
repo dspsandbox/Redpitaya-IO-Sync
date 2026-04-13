@@ -75,6 +75,8 @@ rf_out_0 | OUT1 | Fast analog output (+/-1V, 14-bit, 125 MSa/s)
 rf_out_2 | OUT2 | Fast analog output (+/-1V, 14-bit, 125 MSa/s)
 rf_in_0 | IN1 | Fast analog input (+/-1V or +/-20V, 14-bit, 125 MSa/s)
 rf_in_1 | IN2 | Fast analog input (+/-1V or +/-20V, 14-bit, 125 MSa/s)
+daisy_0 | S1 | Synchronization connector (gen 1: SATA, gen 2: USB-C)
+daisy_1 | S2 | Synchronization connector (gen 1: SATA, gen 2: USB-C)
 
 
 
