@@ -45,7 +45,7 @@ Please install the Zynq TCP Control library (TCP-based control utilities for ZYN
 
 
 
-## Supported IOs & Pin Mapping
+## IOs & Pin Mapping
 
 ![](https://redpitaya.readthedocs.io/en/latest/_images/Red_Pitaya_pinout.jpg)
 
