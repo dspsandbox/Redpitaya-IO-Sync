@@ -1,20 +1,14 @@
 # Redpitaya-IO-Sync
 Library for Synchronous and Deterministic Control of Redpitaya Digital and Analog IOs
 
-
-## Virtual Environment (optional)
-* Create virtual environment 
-    ```
-    sudo apt update
-    sudo apt install python3-venv
-    python3 -m venv .venv
-    
-    ```
-* Activate virtual environment
-    ```
-    source .venv/bin/activate     # Linux / macOS
-    # .venv\Scripts\activate      # Windows
-    ```
+## Supported Devices
+* Redpitaya-125-14-Z10:
+    * STEMlab 125-14 (Gen 2)
+    * STEMlab 125-14 (Gen 1) 
+    * STEMlab 125-14 Low Noise (Gen 1)
+* Redpitaya-125-14-Z20:
+    * STEMlab 125-14 Pro (Gen 2)
+    * STEMlab 125-14 Z7020 Low Noise (Gen 1)
 
 ## Dependencies
 Please install the Zynq TCP Control library (TCP-based control utilities for ZYNQ FPGA boards, enabling remote bitstream loading and memory IO). 
@@ -25,24 +19,24 @@ Please install the Zynq TCP Control library (TCP-based control utilities for ZYN
 * Follow the remote & local [installation instructions](https://github.com/dspsandbox/zynq_utils/blob/master/zynq_tcp_ctrl/README.md)
 
 ## Installation
-* Navigate to python lib and install via pip3 (-e for editable install):
+* Navigate to the python lib and install via pip3 (-e for editable install):
     ```
     cd redpitaya-io-sync
     python3 -m pip install --upgrade pip setuptools wheel
     pip3 install -e .
 
     ```
-## Supported Devices
-* Redpitaya-125-14-Z10:
-    * STEMlab 125-14 (Gen 2)
-    * STEMlab 125-14 (Gen 1) 
-    * STEMlab 125-14 Low Noise (Gen 1)
-* Redpitaya-125-14-Z20:
-    * STEMlab 125-14 Pro (Gen 2)
-    * STEMlab 125-14 Z7020 Low Noise (Gen 1)
-    
 
-
+## Examples
+|Notebook | Description|
+|-|-|
+[00_led_blink.ipynb](example/00_led_blink.ipynb) | Turn on/off LEDs with external triggering.          
+[01_digital_in_out.ipynb](example/01_digital_in_out.ipynb) | Configure digital IO direction and square wave generation
+[02_serial.ipynb](example/02_serial.ipynb) | Examples of UART and SPI transaction via digital IOs
+[03_analog_in_out.ipynb](example/03_analog_in_out.ipynb) | Generation and acquisition of analog ramps via slow analog IOs 
+[04_rf_in_out.ipynb](example/04_rf_in_out.ipynb) | RF synthesis and acquisition via high-speed analog IOs
+[05_param_io_frame.ipynb](example/05_param_io_frame.ipynb) | Parametrizable IO frames and configurable sequences 
+[06_multi_device_sync.ipynb](example/06_multi_device_sync.ipynb) | Multi-device synchronization and scalability 
 
 
 ## IOs & Pin Mapping
@@ -86,16 +80,6 @@ daisy_1 | S2 | Synchronization connector (gen 1: SATA, gen 2: USB-C)
 
 
 
-## Examples
-|Notebook | Description|
-|-|-|
-[00_led_blink.ipynb](example/00_led_blink.ipynb) | Turn on/off LEDs with external triggering.          
-[01_digital_in_out.ipynb](example/01_digital_in_out.ipynb) | Configure digital IO direction and square wave generation
-[02_serial.ipynb](example/02_serial.ipynb) | Examples of UART and SPI transaction via digital IOs
-[03_analog_in_out.ipynb](example/03_analog_in_out.ipynb) | Generation and acquisition of analog ramps via slow analog IOs 
-[04_rf_in_out.ipynb](example/04_rf_in_out.ipynb) | RF synthesis and acquisition via high-speed analog IOs
-[05_param_io_frame.ipynb](example/05_param_io_frame.ipynb) | Parametrizable IO frames and configurable sequences 
-[06_multi_device_sync.ipynb](example/06_multi_device_sync.ipynb) | Multi-device synchronization and scalability 
 
 
 
