@@ -8,22 +8,22 @@ class ScopeCmd(Enum):
     DEC = 0x2
 
 class ScopeSource(Enum):
-    RF_IN_1 = 0x0
-    RF_IN_2 = 0x1
-    RF_OUT_1 = 0x2
-    RF_OUT_2 = 0x3
-    DIGITAL_IO_1 = 0x4
-    DIGITAL_IO_2 = 0x5
-    DIGITAL_IO_3 = 0x6
-    DIGITAL_IO_4 = 0x7
-    ANALOG_OUT_1 = 0x8
-    ANALOG_OUT_2 = 0x9
-    ANALOG_OUT_3 = 0xA
-    ANALOG_OUT_4 = 0xB
-    ANALOG_IN_1 = 0xE
-    ANALOG_IN_2 = 0xC
-    ANALOG_IN_3 = 0xD
-    ANALOG_IN_4 = 0xF
+    RF_IN_0 = 0x0
+    RF_IN_1 = 0x1
+    RF_OUT_0 = 0x2
+    RF_OUT_1 = 0x3
+    DIGITAL_IO_0 = 0x4
+    DIGITAL_IO_1 = 0x5
+    DIGITAL_IO_2 = 0x6
+    DIGITAL_IO_3 = 0x7
+    ANALOG_OUT_0 = 0x8
+    ANALOG_OUT_1 = 0x9
+    ANALOG_OUT_2 = 0xA
+    ANALOG_OUT_3 = 0xB
+    ANALOG_IN_0 = 0xE
+    ANALOG_IN_1 = 0xC
+    ANALOG_IN_2 = 0xD
+    ANALOG_IN_3 = 0xF
     
 
 class Scope(BaseIo):

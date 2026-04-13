@@ -163,8 +163,54 @@ class ParametrizedIoSyncFrame():
         self._frame.reset()
         self._frame_func = func
 
+
+    def _dicts_equal(self, d1, d2):
+        if d1.keys() != d2.keys():
+            return False
+        
+        for k in d1:
+            v1, v2 = d1[k], d2[k]
+            
+            if isinstance(v1, np.ndarray) and isinstance(v2, np.ndarray):
+                if not np.array_equal(v1, v2):
+                    return False
+            elif isinstance(v1, dict) and isinstance(v2, dict):
+                if not self._dicts_equal(v1, v2):
+                    return False
+            elif isinstance(v1, tuple) and isinstance(v2, tuple):
+                if not self._tuples_equal(v1, v2):
+                    return False
+            else:
+                if v1 != v2:
+                    return False
+        return True
+
+    def _tuples_equal(self, t1, t2):
+        if len(t1) != len(t2):
+            return False
+        
+        for v1, v2 in zip(t1, t2):
+            if isinstance(v1, np.ndarray) and isinstance(v2, np.ndarray):
+                if not np.array_equal(v1, v2):
+                    return False
+            elif isinstance(v1, tuple) and isinstance(v2, tuple):
+                if not self._tuples_equal(v1, v2):
+                    return False
+            elif isinstance(v1, dict) and isinstance(v2, dict):
+                if not self._dicts_equal(v1, v2): 
+                    return False
+            else:
+                if v1 != v2:
+                    return False
+    
+        return True
+    
+
     def _is_locked(self):
-        return self._frame._is_locked() and (self._frame_args == self._frame_args_last) and (self._frame_kwargs == self._frame_kwargs_last) and (self._frame_func is not None)
+        return (self._frame._is_locked() and
+                self._tuples_equal(self._frame_args, self._frame_args_last) and
+                self._dicts_equal(self._frame_kwargs, self._frame_kwargs_last) and
+                (self._frame_func is not None))
     
     def _get_instruction_list(self):
         if not self._is_locked():

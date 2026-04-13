@@ -77,39 +77,38 @@ class Rp_base():
 
         
             
-    def _upload(self, force=False):
+    def _upload(self, ):
         frame_dict = self._frame_dict
-        if force or not all(frame._is_locked() for frame in self._frame_dict.values()):      
-            self._reset()
-            for label in frame_dict.keys():
-                frame = frame_dict[label]
-                instr_list = frame._get_instruction_list()
-        
-                #Check instruction memory size
-                instr_list_bytes = instr_list.tobytes()
-                instr_list_size = len(instr_list_bytes)
-                if self._ptr_dict["instr"] + instr_list_size > self.MMAP_DICT["mem_instr"]["addr"] + self.MMAP_DICT["mem_instr"]["size"]:
-                    raise Exception(f"Frame {label} ({self.get_uid()}) exceeds available instruction memory ({self.MMAP_DICT['mem_instr']['size']} bytes).")
-                
-                #Check scope memory size
-                acq_dict = frame._get_acquisition_dict()
-                for scope_label in acq_dict.keys():
-                    for acq_label in acq_dict[scope_label].keys():
-                        acq_samples = acq_dict[scope_label][acq_label]["samples"]
-                        acq_size = acq_samples * np.int16().nbytes  
-                        if (self._ptr_dict[scope_label] + acq_size) > (self.MMAP_DICT[f"mem_{scope_label}"]["addr"] + self.MMAP_DICT[f"mem_{scope_label}"]["size"]):
-                            raise Exception(f"Frame {label} ({self.get_uid()}) exceeds available {scope_label} memory ({self.MMAP_DICT[f'mem_{scope_label}']['size']} bytes).")
-                
-                #Append frame
-                self._tcp_ctrl_client.write(addr=self._ptr_dict["instr"], val=instr_list_bytes)
+        self._reset()
+        for label in frame_dict.keys():
+            frame = frame_dict[label]
+            instr_list = frame._get_instruction_list()
+    
+            #Check instruction memory size
+            instr_list_bytes = instr_list.tobytes()
+            instr_list_size = len(instr_list_bytes)
+            if self._ptr_dict["instr"] + instr_list_size > self.MMAP_DICT["mem_instr"]["addr"] + self.MMAP_DICT["mem_instr"]["size"]:
+                raise Exception(f"Frame {label} ({self.get_uid()}) exceeds available instruction memory ({self.MMAP_DICT['mem_instr']['size']} bytes).")
+            
+            #Check scope memory size
+            acq_dict = frame._get_acquisition_dict()
+            for scope_label in acq_dict.keys():
+                for acq_label in acq_dict[scope_label].keys():
+                    acq_samples = acq_dict[scope_label][acq_label]["samples"]
+                    acq_size = acq_samples * np.int16().nbytes  
+                    if (self._ptr_dict[scope_label] + acq_size) > (self.MMAP_DICT[f"mem_{scope_label}"]["addr"] + self.MMAP_DICT[f"mem_{scope_label}"]["size"]):
+                        raise Exception(f"Frame {label} ({self.get_uid()}) exceeds available {scope_label} memory ({self.MMAP_DICT[f'mem_{scope_label}']['size']} bytes).")
+            
+            #Transfer frame instruction list to device
+            self._tcp_ctrl_client.write(addr=self._ptr_dict["instr"], val=instr_list_bytes)
 
-                #Append frame metadata
-                self._frame_dict[label] = frame
-                self._ptr_dict["instr"] += instr_list_size
-                for scope_label in acq_dict.keys():
-                    for acq_label in acq_dict[scope_label].keys():
-                        acq_dict[scope_label][acq_label]["addr"] = self._ptr_dict[scope_label]
-                        self._ptr_dict[scope_label] += acq_dict[scope_label][acq_label]["samples"] * np.int16().nbytes 
+            #Append frame metadata
+            self._frame_dict[label] = frame
+            self._ptr_dict["instr"] += instr_list_size
+            for scope_label in acq_dict.keys():
+                for acq_label in acq_dict[scope_label].keys():
+                    acq_dict[scope_label][acq_label]["addr"] = self._ptr_dict[scope_label]
+                    self._ptr_dict[scope_label] += acq_dict[scope_label][acq_label]["samples"] * np.int16().nbytes 
 
 
         

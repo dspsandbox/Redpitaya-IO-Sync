@@ -2,8 +2,7 @@
 Library for Synchronous and Deterministic Control of Redpitaya Digital and Analog IOs
 
 
-
-### Virtual Environment (optional)
+## Virtual Environment (optional)
 * Create virtual environment 
     ```
     sudo apt update
@@ -17,11 +16,91 @@ Library for Synchronous and Deterministic Control of Redpitaya Digital and Analo
     # .venv\Scripts\activate      # Windows
     ```
 
+## Dependencies
+Please install the Zynq TCP Control library (TCP-based control utilities for ZYNQ FPGA boards, enabling remote bitstream loading and memory IO). 
+* Clone the repository
+    ``` 
+    git clone https://github.com/dspsandbox/zynq_utils/tree/master/zynq_tcp_ctrl
+    ```
+* Follow the remote & local [installation instructions](https://github.com/dspsandbox/zynq_utils/blob/master/zynq_tcp_ctrl/README.md)
 
-### Local Installation
+## Installation
 * Navigate to python lib and install via pip3 (-e for editable install):
     ```
     cd redpitaya-io-sync
     python3 -m pip install --upgrade pip setuptools wheel
     pip3 install -e .
+
     ```
+
+
+## Supported IOs & Pin Mapping
+
+
+
+
+
+
+
+
+
+|IO Name | RP-125 Pin Name | Description|
+|-|-|-|
+led[0-7] | LED_0-7 | User LEDs
+digital_io_0[0] | DIO0_P (trig ext) | Digital IO (3.3V) 
+digital_io_0[1] | DIO0_N  | Digital IO (3.3V)
+digital_io_0[2] | DIO1_P | Digital IO (3.3V)  
+digital_io_0[3] | DIO1_N  | Digital IO (3.3V) 
+digital_io_1[0] | DIO2_P  | Digital IO (3.3V) 
+digital_io_1[1] | DIO2_N  | Digital IO (3.3V) 
+digital_io_1[2] | DIO3_P  | Digital IO (3.3V) 
+digital_io_1[3] | DIO3_N  | Digital IO (3.3V) 
+digital_io_2[0] | DIO4_P  | Digital IO (3.3V) 
+digital_io_2[1] | DIO4_N  | Digital IO (3.3V) 
+digital_io_2[2] | DIO5_P  | Digital IO (3.3V) 
+digital_io_2[3] | DIO5_N  | Digital IO (3.3V) 
+digital_io_3[0] | DIO6_P  | Digital IO (3.3V) 
+digital_io_3[1] | DIO6_N  | Digital IO (3.3V) 
+digital_io_3[2] | DIO7_P  | Digital IO (3.3V) 
+digital_io_3[3] | DIO7_N  | Digital IO (3.3V) 
+analog_in_0 | Analog input 0 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
+analog_in_1 | Analog input 1 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
+analog_in_2 | Analog input 2 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
+analog_in_3 | Analog input 3 | Slow analog input (0V-3.5V, 12-bit, 250 KSa/s)
+analog_out_0 | Analog Output 0 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
+analog_out_1 | Analog Output 1 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
+analog_out_2 | Analog Output 2 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
+analog_out_3 | Analog Output 3 | Slow analog output (0V-1.8V, 8-bit, fc = 190kHz)
+rf_out_0 | OUT1 | Fast analog output (+/-1V, 14-bit, 125 MSa/s)
+rf_out_2 | OUT2 | Fast analog output (+/-1V, 14-bit, 125 MSa/s)
+rf_in_0 | IN1 | Fast analog input (+/-1V or +/-20V, 14-bit, 125 MSa/s)
+rf_in_1 | IN2 | Fast analog input (+/-1V or +/-20V, 14-bit, 125 MSa/s)
+
+
+
+
+
+
+
+
+
+## Examples
+|Notebook | Description|
+|-|-|
+[00_led_blink.ipynb](example/00_led_blink.ipynb) | Turn on/off LEDs with external triggering.          
+[01_digital_in_out.ipynb](example/01_digital_in_out.ipynb) | Configure digital IO direction and square wave generation
+[02_serial.ipynb](example/02_serial.ipynb) | Examples of UART and SPI transaction via digital IOs
+[03_analog_in_out.ipynb](example/03_analog_in_out.ipynb) | Generation and acquisition of analog ramps via slow analog IOs 
+[04_rf_in_out.ipynb](example/04_rf_in_out.ipynb) | RF synthesis and acquisition via high-speed analog IOs
+[05_param_io_frame.ipynb](example/05_param_io_frame.ipynb) | Parametrizable IO frames and configurable sequences 
+[06_multi_device_sync.ipynb](example/06_multi_device_sync.ipynb) | Multi-device synchronization and scalability 
+
+
+
+
+
+
+
+
+
+

@@ -117,10 +117,10 @@ class IoSequence():
         
         return description
 
-    def upload(self, force=False):
+    def upload(self, ):
         self._check_sequence_done()
         for device in self._device_dict.values():
-            device._upload(force=force)
+            device._upload()
                     
 
     def _check_sequence_done(self, autostop=True):
