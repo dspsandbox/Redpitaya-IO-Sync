@@ -2,13 +2,13 @@
 Library for Synchronous and Deterministic Control of Redpitaya Digital and Analog IOs
 
 ## Supported Devices
-* Redpitaya-125-14-Z10:
+* Redpitaya-125-14-z7010:
     * STEMlab 125-14 (Gen 2)
     * STEMlab 125-14 (Gen 1) 
     * STEMlab 125-14 Low Noise (Gen 1)
-<!-- * Redpitaya-125-14-Z20:
+* Redpitaya-125-14-z7020:
     * STEMlab 125-14 Pro (Gen 2)
-    * STEMlab 125-14 Z7020 Low Noise (Gen 1) -->
+    * STEMlab 125-14 Z7020 Low Noise (Gen 1)
 
 ## Dependencies
 Please install the Zynq TCP Control library (TCP-based control utilities for ZYNQ FPGA boards, enabling remote bitstream loading and memory IO). 

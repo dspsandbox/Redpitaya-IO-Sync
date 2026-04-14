@@ -166,7 +166,7 @@
         "ARCHITECTURE": [ { "value": "zynq" } ],
         "BASE_BOARD_PART": [ { "value": "" } ],
         "BOARD_CONNECTIONS": [ { "value": "" } ],
-        "DEVICE": [ { "value": "xc7z010" } ],
+        "DEVICE": [ { "value": "xc7z020" } ],
         "NEXTGEN_VERSAL": [ { "value": "0" } ],
         "PACKAGE": [ { "value": "clg400" } ],
         "PREFHDL": [ { "value": "VERILOG" } ],
