@@ -52,7 +52,7 @@ class Rp_125_14_Z7020(Rp_base):
 
 
     def __init__(self, ip: str, label: str = "rp_125_14_z7020", daisy_0_en: bool = False, daisy_1_en: bool = False, force: bool = False):
-        super().__init__(ip, label, force)
+        super().__init__(ip, label, daisy_0_en, daisy_1_en, force)
         
     def _get_compatible_devices(self):
         from .rp_125_14_z7010 import Rp_125_14_Z7010
