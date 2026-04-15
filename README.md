@@ -1,5 +1,5 @@
 # Redpitaya-IO-Sync
-Library for Synchronous and Deterministic Control of Redpitaya Digital and Analog IOs
+Library for Synchronous and Deterministic Control of Redpitaya's Digital and Analog IOs
 
 ## Supported Devices
 * Redpitaya-125-14-z7010:
@@ -40,7 +40,7 @@ Please install the Zynq TCP Control library (TCP-based control utilities for ZYN
 [06_multi_device_sync.ipynb](example/06_multi_device_sync.ipynb) | Multi-device synchronization and scalability 
 
 
-## IOs & Pin Mapping
+## Supported IOs & Pin Mapping
 
 ![](https://redpitaya.readthedocs.io/en/latest/_images/Red_Pitaya_pinout.jpg)
 
