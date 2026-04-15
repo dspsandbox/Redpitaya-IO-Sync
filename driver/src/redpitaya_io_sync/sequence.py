@@ -30,8 +30,8 @@ class IoSequence():
              raise Exception(f"Frame must be of type IoSyncFrame or ParametrizedIoSyncFrame, got {type(frame)}.") 
         if not issubclass(type(device), Rp_base):
                 raise Exception(f"Provided device attribute is not a valid device instance.")
-        if not isinstance(device, frame._device_type):
-            raise Exception(f"Provided device ({device.get_uid()}) is not an instance of the frame device class ({frame._device_type.__name__}).")
+        if not isinstance(device, frame._device_type) and frame._device_type not in device._get_compatible_devices():
+            raise Exception(f"Provided device ({device.get_uid()}) is neither an instance of the frame device class ({frame._device_type.__name__}) nor within its compatible devices ({', '.join([cls.__name__ for cls in device._get_compatible_devices()])}).")
         if device not in self._device_dict.values():
             raise Exception(f"Provided device ({device.get_uid()}) is not in the sequence device list.")        
 

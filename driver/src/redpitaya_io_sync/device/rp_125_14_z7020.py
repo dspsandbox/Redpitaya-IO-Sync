@@ -50,7 +50,10 @@ class Rp_125_14_Z7020(Rp_base):
 
 
     def __init__(self, ip: str, label: str = "rp_125_14_z7020", force: bool = False):
-        
         super().__init__(ip, label, force)
+        
+    def _get_compatible_devices(self):
+        from .rp_125_14_z7010 import Rp_125_14_Z7010
+        return [Rp_125_14_Z7010]
 
 
