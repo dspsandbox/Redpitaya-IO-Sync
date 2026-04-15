@@ -21,7 +21,7 @@ class TcpCtrlClientMock():
         pass
 
 class Rp_125_14_Mock(Rp_125_14_Z7010):
-    def __init__(self, ip: str, label: str, force: bool = False):
+    def __init__(self, ip: str, label: str, daisy_0_en: bool = False, daisy_1_en: bool = False, force: bool = False):
         super().__init__(ip, label, force)
     
     def _init_tcp_ctrl_client(self):

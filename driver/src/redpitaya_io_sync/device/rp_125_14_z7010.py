@@ -41,6 +41,8 @@ class Rp_125_14_Z7010(Rp_base):
         "reg_bank_flush" : 0x4000_0044,
         "reg_bank_scope_0_samples" : 0x4000_0048,
         "reg_bank_scope_1_samples" : 0x4000_004C,
+        "reg_bank_daisy_0_sel" : 0x4000_0050,
+        "reg_bank_daisy_1_sel" : 0x4000_0054,
         "dma_instr" : 0x4001_0000,
         "dma_scope_0" : 0x4002_0000,
         "dma_scope_1" : 0x4003_0000
@@ -48,8 +50,8 @@ class Rp_125_14_Z7010(Rp_base):
     BITSTREAM = os.path.join(os.path.dirname(__file__), "../bitstream/io_sync_rp_125_14_z7010.bit")
 
 
-    def __init__(self, ip: str, label: str = "rp_125_14_z7010", force: bool = False):
-        super().__init__(ip, label, force)
+    def __init__(self, ip: str, label: str = "rp_125_14_z7010", daisy_0_en: bool = False, daisy_1_en: bool = False, force: bool = False):
+        super().__init__(ip, label, daisy_0_en, daisy_1_en, force)
 
     def _get_compatible_devices(self):
         from .rp_125_14_z7020 import Rp_125_14_Z7020

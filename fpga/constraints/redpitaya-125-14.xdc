@@ -155,22 +155,19 @@ set_property PACKAGE_PIN M15 [get_ports {dig_io_4[3]}]
 
 
 #### Daisy chain (sync)
-set_property IOSTANDARD LVCMOS18 [get_ports {sync_daisy_*}]
-set_property SLEW       FAST     [get_ports {sync_daisy_*}]
-set_property DRIVE      8        [get_ports {sync_daisy_*}]
-set_property PULLUP   TRUE     [get_ports {sync_daisy_*_i}]
+set_property IOSTANDARD DIFF_HSTL_I_18 [get_ports {sync_daisy_*}]
 
-#daisy_p_o[0], daisy_p_o[1]
-set_property PACKAGE_PIN T12 [get_ports {sync_daisy_1_o}] 
-set_property PACKAGE_PIN U14 [get_ports {sync_daisy_1_i}] 
-#set_property PACKAGE_PIN U12 [get_ports {daisy_n_o[0]}]
-#set_property PACKAGE_PIN U15 [get_ports {daisy_n_o[1]}]
+#daisy_p_o[0], daisy_n_o[0], daisy_p_o[1], daisy_n_o[1]
+set_property PACKAGE_PIN T12 [get_ports {sync_daisy_1_o_p}] 
+set_property PACKAGE_PIN U12 [get_ports {sync_daisy_1_o_n}]
+set_property PACKAGE_PIN U14 [get_ports {sync_daisy_1_i_p}] 
+set_property PACKAGE_PIN U15 [get_ports {sync_daisy_1_i_n}]
 
-#daisy_p_i[0], daisy_p_i[1]
-set_property PACKAGE_PIN P14 [get_ports {sync_daisy_2_i}] 
-set_property PACKAGE_PIN N18 [get_ports {sync_daisy_2_o}] 
-#set_property PACKAGE_PIN R14 [get_ports {daisy_n_i[0]}]
-#set_property PACKAGE_PIN P19 [get_ports {daisy_n_i[1]}]
+#daisy_p_i[0], daisy_n_i[0], daisy_p_i[1], daisy_n_i[1]
+set_property PACKAGE_PIN P14 [get_ports {sync_daisy_2_i_p}] 
+set_property PACKAGE_PIN R14 [get_ports {sync_daisy_2_i_n}]
+set_property PACKAGE_PIN N18 [get_ports {sync_daisy_2_o_p}] 
+set_property PACKAGE_PIN P19 [get_ports {sync_daisy_2_o_n}]
 
 
 #### LED

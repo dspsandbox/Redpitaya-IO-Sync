@@ -141,18 +141,18 @@ class ParametrizedIoSyncFrame():
         self._device_type = device_type
         self._trig = trig
         self._frame = IoSyncFrame(device_type=device_type, trig=trig)
-        self._frame_args = None
-        self._frame_kwargs = None
-        self._frame_args_last = None
-        self._frame_kwargs_last = None
+        self._frame_args = ()
+        self._frame_kwargs = {}
+        self._frame_args_last = ()
+        self._frame_kwargs_last = {}
         self._frame_func = None
 
     def reset(self):
         self._frame.reset()
-        self._frame_args = None
-        self._frame_kwargs = None
-        self._frame_args_last = None
-        self._frame_kwargs_last = None
+        self._frame_args = ()
+        self._frame_kwargs = {}
+        self._frame_args_last = ()
+        self._frame_kwargs_last = {}
         self._frame_func = None
 
     def set_frame_parameter(self, *args, **kwargs):

@@ -6,7 +6,7 @@ from ..dma.dma import DMA
 
 
 class Rp_base():
-    def __init__(self, ip: str, label: str, force: bool):
+    def __init__(self, ip: str, label: str, daisy_0_en: bool, daisy_1_en: bool, force: bool):
         self._ip = ip
         self._label = label
         self._check_attribute("CLK_FREQ")
@@ -26,9 +26,14 @@ class Rp_base():
         self._dma_dict = {}
         self._init_ptr()
         self._init_dma()
-        
+        self._init_daisy(daisy_0_en, daisy_1_en)
         
         self._stop()
+
+
+    def _init_daisy(self, daisy_0_en, daisy_1_en):
+        self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_daisy_0_sel"], val=not(daisy_0_en))
+        self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_daisy_1_sel"], val=not(daisy_1_en))
     
     def _init_mmap(self):
         self._mmap_dict = {}
