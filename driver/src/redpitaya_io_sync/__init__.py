@@ -1,5 +1,5 @@
 __all__ = [
-    "devices",
+    "device",
     "frame",
     "sequence",
     "serial"
