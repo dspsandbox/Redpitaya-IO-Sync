@@ -13,13 +13,17 @@ Library for Synchronous and Deterministic Control of Redpitaya's Digital and Ana
 
 ## Dependencies
 Please install the Zynq TCP Control library (TCP-based control utilities for ZYNQ FPGA boards, enabling remote bitstream loading and memory IO). 
-* Clone the repository
+* Clone the Zynq TCP Control repository
     ``` 
     git clone https://github.com/dspsandbox/zynq_utils/tree/master/zynq_tcp_ctrl
     ```
 * Follow the remote & local [installation instructions](https://github.com/dspsandbox/zynq_utils/blob/master/zynq_tcp_ctrl/README.md)
 
 ## Installation
+* Clone this repository:
+  '''
+  git clone https://github.com/dspsandbox/Redpitaya-IO-Sync/tree/main
+  '''
 * Navigate to the python lib and install via pip3 (-e for editable install):
     ```
     cd redpitaya-io-sync
