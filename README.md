@@ -31,20 +31,25 @@ Library for Synchronous and Deterministic Control of Redpitaya's Digital and Ana
     * STEMlab 125-14 Pro Z7020 (Gen 2)
 ## Installation
 ### Dependencies
-* Please install the Zynq TCP Control library (TCP-based control utilities for ZYNQ FPGA boards, enabling remote bitstream loading and memory IO). 
+Please install the Zynq TCP Control library (TCP-based control utilities for ZYNQ FPGA boards, enabling remote bitstream loading and memory IO). 
 * Clone the repository
     ``` 
     git clone https://github.com/dspsandbox/zynq_utils/tree/master/zynq_tcp_ctrl
     ```
+  
 * Follow the remote & local [installation instructions](https://github.com/dspsandbox/zynq_utils/blob/master/zynq_tcp_ctrl/README.md)
 
 ### This Library
+* Clone the Zynq TCP Control repository:
+  ```
+  git clone https://github.com/dspsandbox/Redpitaya-IO-Sync/tree/main
+  ```
+
 * Navigate to the python lib and install via pip3 (-e for editable install):
     ```
     cd redpitaya-io-sync
     python3 -m pip install --upgrade pip setuptools wheel
     pip3 install -e .
-
     ```
 
 ## Documentation
