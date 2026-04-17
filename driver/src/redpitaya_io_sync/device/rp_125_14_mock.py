@@ -1,5 +1,5 @@
 import numpy as np
-from .rp_125_14_z7010 import Rp_125_14_Z7010
+from .rp_125_14 import Rp_125_14_Z7010
 
 np.random.seed(2)
 
@@ -36,6 +36,4 @@ class Rp_125_14_Mock(Rp_125_14_Z7010):
     def _init_dma(self):
         return
     
-    def _get_compatible_devices(self):
-        return []
-   
+Rp_125_14_Mock.COMPATIBLE_DEVICES = []   

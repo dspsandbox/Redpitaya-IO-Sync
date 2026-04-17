@@ -4,8 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "redpitaya_io_sync"
-version = "0.1.0"
-description = "RedPitaya IO Sync Sequencer"
+version = "0.1.1"
+authors = [
+    {name = "Pau Gómez", email = "pau.gomez@dspsandbox.org"},
+]
+description = "Library for Synchronous and Deterministic Control of Redpitaya's Digital and Analog IOs"
 requires-python = ">=3.8"
 dependencies = []
 

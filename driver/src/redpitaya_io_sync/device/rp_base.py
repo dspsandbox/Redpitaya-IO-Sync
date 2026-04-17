@@ -14,6 +14,7 @@ class Rp_base():
         self._check_attribute("MMAP_DICT")
         self._check_attribute("ADDR_DICT")
         self._check_attribute("BITSTREAM")
+        self._check_attribute("COMPATIBLE_DEVICES")
         
         self._tcp_ctrl_client = None
         self._init_tcp_ctrl_client()

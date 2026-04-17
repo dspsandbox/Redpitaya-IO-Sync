@@ -26,15 +26,11 @@ class IoSyncFrame:
         
         
     
-    def __getattribute__(self, name):
-        try:
-            io = object.__getattribute__(self, "_io_dict")
-        except AttributeError:
-            return object.__getattribute__(self, name)
-
-        if name in io:
-            return io[name]
-        return object.__getattribute__(self, name)
+    def __getattr__(self, name):
+        io_dict = object.__getattribute__(self, "_io_dict")
+        if name in io_dict:
+            return io_dict[name]
+        raise AttributeError(name)
 
     def reset(self):
         """

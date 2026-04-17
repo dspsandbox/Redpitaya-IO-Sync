@@ -1,6 +1,25 @@
 # Redpitaya-IO-Sync
 Library for Synchronous and Deterministic Control of Redpitaya's Digital and Analog IOs
 
+## Features:
+* Real-time control (8ns resolution) of:
+  * RF out (x2): amplitude, frequency, phase
+  * RF in (x2): acquisition, decimation
+  * Digital IOs (x16): direction, output value, input acquisition
+  * Serial communication: SPI, UART (via Digital IOs)
+  * LEDs (x8): output value
+  * Analog out, PWM + LPF (x4): output value 
+  * Analog in, XADC (x4): acquisition, decimation
+
+* Experimental sequences with:
+   * Independent and parametrizable sub-sequences (*IoSyncFrames*, *ParemetrizedIoSyncFrames*) for modular coding and reduced compilation time
+   * External triggering
+   * Multi-device synchronization 
+
+* Buffer size:
+    * Instructions: 16MB, 2M instructions
+    * Scope/Acquisition (x2): 8MB, 4M samples
+
 ## Supported Devices
 * Redpitaya-125-14-z7010:
     * STEMlab 125-14 (Gen 1) 
@@ -10,29 +29,31 @@ Library for Synchronous and Deterministic Control of Redpitaya's Digital and Ana
 * Redpitaya-125-14-z7020:
     * STEMlab 125-14 Z7020 Low Noise (Gen 1)
     * STEMlab 125-14 Pro Z7020 (Gen 2)
-
-## Dependencies
+## Installation
+### Dependencies
 Please install the Zynq TCP Control library (TCP-based control utilities for ZYNQ FPGA boards, enabling remote bitstream loading and memory IO). 
-* Clone the Zynq TCP Control repository
-    ```
+* Clone the repository
+    ``` 
     git clone https://github.com/dspsandbox/zynq_utils/tree/master/zynq_tcp_ctrl
     ```
   
 * Follow the remote & local [installation instructions](https://github.com/dspsandbox/zynq_utils/blob/master/zynq_tcp_ctrl/README.md)
 
-## Installation
-* Clone this repository:
+### This Library
+* Clone the Zynq TCP Control repository:
   ```
   git clone https://github.com/dspsandbox/Redpitaya-IO-Sync/tree/main
   ```
-  
+
 * Navigate to the python lib and install via pip3 (-e for editable install):
     ```
     cd redpitaya-io-sync
     python3 -m pip install --upgrade pip setuptools wheel
     pip3 install -e .
-
     ```
+
+## Documentation
+In progress...
 
 ## Examples
 |Notebook | Description|
@@ -46,7 +67,7 @@ Please install the Zynq TCP Control library (TCP-based control utilities for ZYN
 [06_multi_device_sync.ipynb](example/06_multi_device_sync.ipynb) | Multi-device synchronization and scalability 
 
 
-## Supported IOs & Pin Mapping
+## IOs & Pin Mapping
 
 ![](https://redpitaya.readthedocs.io/en/latest/_images/Red_Pitaya_pinout.jpg)
 
