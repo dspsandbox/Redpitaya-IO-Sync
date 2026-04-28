@@ -1,4 +1,4 @@
-redpitaya-io-sync
+Redpitaya IO Sync
 =================
 
 Library for synchronous and deterministic control of Red Pitaya's digital and analog IOs.

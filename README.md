@@ -53,7 +53,7 @@ Please install the Zynq TCP Control library (TCP-based control utilities for ZYN
     ```
 
 ## Documentation
-In progress...
+See [Pyhton API Reference](https://dspsandbox.github.io/Redpitaya-IO-Sync/) (latest version).
 
 ## Examples
 |Notebook | Description|
