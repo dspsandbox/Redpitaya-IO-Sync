@@ -1,0 +1,5 @@
+sphinx>=7.1.2
+furo
+myst-nb==1.0.0rc0
+sphinx-autodoc-typehints
+numpy

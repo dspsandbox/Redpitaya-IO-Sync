@@ -3,12 +3,14 @@ from ..io.rf import RfIn, RfOut
 from ..io.digital import DigitalIo
 from ..io.analog import AnalogOut
 from ..io.scope import Scope
-from ..io.sync import Sync  
-from ..io.led import Led  
-import os
+from ..io.sync import Sync
+from ..io.led import Led
 
 
 class Rp_125_14(Rp_base):
+    """Base class for Red Pitaya 125-14 devices (125 MHz, 14-bit ADC/DAC).
+    """
+
     CLK_FREQ = 125e6
     IO_DICT = {
         "rf_out_0": {"class": RfOut, "addr": 0x0},
@@ -55,14 +57,36 @@ class Rp_125_14(Rp_base):
 
 
 class Rp_125_14_Z7010(Rp_125_14):
-    BITSTREAM = os.path.join(os.path.dirname(__file__), "../bitstream/io_sync_rp_125_14_z7010.bit")
+    """
+    Redpitaya-124-14 device class (Z7010 FPGA chipset).
+
+    :param ip: IP address or URL
+    :param label: User-defined name
+    :param daisy_0_en: Enable daisy chain sync connector 0
+    :param daisy_1_en: Enable daisy chain sync connector 1
+    :param force: Force bitstream reloading (resets FPGA configuration)
+    """
+
+    BITSTREAM = "bitstream/io_sync_rp_125_14_z7010.bit"
     
     def __init__(self, ip: str, label: str = "rp_125_14_z7010", daisy_0_en: bool = False, daisy_1_en: bool = False, force: bool = False):
         super().__init__(ip, label, daisy_0_en, daisy_1_en, force)  
 
+    
+
 
 class Rp_125_14_Z7020(Rp_125_14):
-    BITSTREAM = os.path.join(os.path.dirname(__file__), "../bitstream/io_sync_rp_125_14_z7020.bit")
+    """
+    Redpitaya-124-14 device class (Z7020 FPGA chipset).
+
+    :param ip: IP address or URL
+    :param label: User-defined name
+    :param daisy_0_en: Enable daisy chain sync connector 0
+    :param daisy_1_en: Enable daisy chain sync connector 1
+    :param force: Force bitstream reloading (resets FPGA configuration)
+    """
+
+    BITSTREAM = "bitstream/io_sync_rp_125_14_z7020.bit"
 
     def __init__(self, ip: str, label: str = "rp_125_14_z7020", daisy_0_en: bool = False, daisy_1_en: bool = False, force: bool = False):
         super().__init__(ip, label, daisy_0_en, daisy_1_en, force)  

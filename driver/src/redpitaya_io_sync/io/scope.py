@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .base import BaseIo
 import numpy as np
 from enum import Enum

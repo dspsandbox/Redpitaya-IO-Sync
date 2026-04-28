@@ -1,4 +1,5 @@
 import time
+from pathlib import Path
 import numpy as np
 from zynq_tcp_ctrl import ZynqTcpCtrlClient
 from ..frame import IoSyncFrame, ParametrizedIoSyncFrame
@@ -64,7 +65,8 @@ class Rp_base():
             raise Exception(f"Attribute {attr} not found. Please define {attr} in the device subclass.")
 
     def _load_bitstream(self, force=False):
-        self._tcp_ctrl_client.load_bitstream(path=self.BITSTREAM, force=force)
+        path = Path(__file__).parent.parent / self.BITSTREAM
+        self._tcp_ctrl_client.load_bitstream(path=str(path), force=force)
         
     def _reset(self):
         self._stop()

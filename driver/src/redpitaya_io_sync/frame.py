@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 import copy
 from .io.sync import TriggerSource
@@ -6,6 +7,14 @@ from .io.sync import TriggerSource
 PREALLOCATION_BLOCK_LEN = 0x10000
 
 class IoSyncFrame:
+    """A single frame of IO instructions for a given device.
+
+    At instantiation, one IO instance is created for each entry in
+    ``device_type.IO_DICT`` and exposed as an attribute with the same name.
+    The exact set of attributes therefore depends on the device type passed
+    (e.g. see :class:`~redpitaya_io_sync.device.rp_125_14.Rp_125_14_Z7010`).
+    """
+
     def __init__(self, device_type, trig: TriggerSource | None = None):
         if trig is None:
             trig = TriggerSource.NONE
