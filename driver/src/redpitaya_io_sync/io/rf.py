@@ -48,11 +48,9 @@ class RfBase(BaseIo):
         """
         Set the output phase.
 
-        The value is taken modulo 360°, so any value outside ``[0°, 360°)`` wraps around.
-
         :param val: Phase in degrees.
         :param update: If ``True``, apply the new value immediately. Set to ``False`` to stage
-            the change and apply it atomically together with other staged parameters.
+            the change and apply it later with other staged parameters.
         """
         cmd = RfCmd.PHASE.value
         if update:
@@ -64,11 +62,9 @@ class RfBase(BaseIo):
         """
         Set the output amplitude.
 
-        The valid range is ``[-1, 1]``, where ``±1`` corresponds to full-scale output.
-
-        :param val: Amplitude as a normalized value in ``[-1, 1]``.
+        :param val: Relative amplitude in range ``[-1, 1]``.
         :param update: If ``True``, apply the new value immediately. Set to ``False`` to stage
-            the change and apply it atomically together with other staged parameters.
+            the change and apply it later with other staged parameters.
         """
         AMPL_MIN = -1
         AMPL_MAX = 1
@@ -85,7 +81,7 @@ class RfBase(BaseIo):
         Reset the DDS phase accumulator to zero.
 
         :param update: If ``True``, apply immediately. Set to ``False`` to stage the reset
-            and apply it atomically together with other staged parameters.
+            and apply it later with other staged parameters.
         """
         cmd = RfCmd.PHASE_RST.value
         if update:

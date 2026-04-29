@@ -13,7 +13,7 @@ class AnalogOut(BaseIo):
 
     def duty_cycle(self, val: float):
         """
-        Define scale of underlying Sigma-Delta Modulator (12-bit resolution).
+        Define scale of underlying Sigma-Delta Modulator.
 
         :param val: Relative scale in range [0.0, 1.0].
         """
