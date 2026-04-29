@@ -6,7 +6,7 @@ Library for synchronous and deterministic control of RedPitaya's digital and ana
 .. toctree::
    :maxdepth: 2
    :caption: Contents
-   
+
    api/device
    api/sequence
    api/frame

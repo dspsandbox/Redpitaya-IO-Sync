@@ -28,6 +28,9 @@ class BaseIo():
     
     
     def reset(self):
+        """
+        Reset IO instruction cache and time base.
+        """
         self._tlast = 0
         self._tnext = 0
         self._tincr = 1
@@ -91,22 +94,45 @@ class BaseIo():
         return instr_list, t_list  
 
 
-    def get_time(self):
+    def get_time(self) -> int:
+        """
+        Retrieve current IO time (in units of CLK cycles).
+        """
         return self._tnext
 
     def set_time(self, val: int):
+        """
+        Define new IO time (should be larger or equal than current IO time).
+
+        :param val: time (in units of clk cycles).
+
+        """
         if val < self._tnext:
             raise Exception(f"Cannot set time to {val} because it is smaller than current time {self._tnext}.")
         self._tnext = np.uint64(val)
     def set_time_increment(self, val: int):
+        """
+        Define IO instruction time increment, i.e. time between consecutive IO instructions. Default time increment after reset is 1 clk cycle.
+
+        :param val: time increment (in units of clk cycles).
+        """
         if val <= 0:
             raise Exception(f"Time increment must be a positive integer. Got {val} instead.")
         self._tincr = np.uint64(val)
 
-    def get_time_increment(self):
+    def get_time_increment(self) -> int:
+        """
+        Retrieve current IO time increment (in units of clk cycles).
+        """
         return self._tincr
     
     def delay(self, val: int = 0):
+        """
+        Increment current IO time by a specified delay time. Used to retard following IO instruction.
+
+        :param val: Delay time (in units of clk cycles).
+
+        """
         t = self.get_time()
         self.set_time(t + val)
 

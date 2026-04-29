@@ -1,6 +1,9 @@
 IO
 ==
 
+See IOs and pin mapping diagrams `here`_.
+
+.. _here: https://github.com/dspsandbox/Redpitaya-IO-Sync#ios--pin-mapping
 
 Base IO
 -------
