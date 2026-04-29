@@ -17,8 +17,8 @@ class UART:
     :param data_len: Number of data bits per frame (default: 8).
     :param stop_len: Number of stop bits per frame (default: 1).
     :param parity: Parity mode. ``0`` = even, ``1`` = odd, ``None`` = no parity (default).
-    :param tx_mask: Single-bit mask selecting the TX pin (default: bit 0).
-    :param rx_mask: Single-bit mask selecting the RX pin (default: bit 1).
+    :param tx_mask: Single-bit mask selecting the TX pin.
+    :param rx_mask: Single-bit mask selecting the RX pin.
     """
     def __init__(self, io: DigitalIo, baud: int, data_len=8, stop_len=1, parity=None, tx_mask: int = 0b0001, rx_mask: int = 0b0010):
         if type(io) != DigitalIo:

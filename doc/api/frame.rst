@@ -7,7 +7,6 @@ Trigger Source
 .. autoclass:: redpitaya_io_sync.io.sync.TriggerSource
    :members:
    :undoc-members:
-   :noindex:
 
 
 Frame Classes

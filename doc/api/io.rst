@@ -53,7 +53,6 @@ Scope (Digital, Analog, RF acquisition)
 .. autoclass:: redpitaya_io_sync.io.scope.ScopeSource
    :members:
    :undoc-members:
-   :show-inheritance:
 
 
 .. autoclass:: redpitaya_io_sync.io.scope.Scope

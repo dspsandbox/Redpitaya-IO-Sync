@@ -130,9 +130,17 @@ def _mark_inherited(app, what, name, obj, options, lines):
     lines.append(f'See {ref}.')
 
 
+def _strip_enum_preamble(_app, what, _name, _obj, _options, lines):
+    if what == 'class' and lines and lines[0].strip() == 'An enumeration.':
+        lines.pop(0)
+        while lines and lines[0].strip() == '':
+            lines.pop(0)
+
+
 def setup(app):
     app.connect('autodoc-process-signature', _suppress_inherited_signature)
     app.connect('autodoc-process-docstring', _mark_inherited)
+    app.connect('autodoc-process-docstring', _strip_enum_preamble)
 
 
 _orig_attr_directive_header = AttributeDocumenter.add_directive_header
@@ -207,6 +215,7 @@ suppress_warnings = ["myst.header", "myst.xref_missing"]
 autodoc_mock_imports = ["zynq_tcp_ctrl"]
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
+autodoc_preserve_defaults = True
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True

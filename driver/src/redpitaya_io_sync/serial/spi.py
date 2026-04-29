@@ -16,10 +16,10 @@ class SPI:
         The SPI clock half-period is ``clk_div / 2`` frame clock cycles.
     :param cpol: Clock polarity. ``0`` = idle low, ``1`` = idle high.
     :param cpha: Clock phase. ``0`` = data sampled on leading edge, ``1`` = on trailing edge.
-    :param sclk_mask: Single-bit mask selecting the SCLK pin (default: bit 0).
-    :param cs_mask: Single-bit mask selecting the CS pin, active-low (default: bit 1).
-    :param mosi_mask: Single-bit mask selecting the MOSI pin (default: bit 2).
-    :param miso_mask: Single-bit mask selecting the MISO pin (default: bit 3).
+    :param sclk_mask: Single-bit mask selecting the SCLK pin.
+    :param cs_mask: Single-bit mask selecting the CS pin, active-low.
+    :param mosi_mask: Single-bit mask selecting the MOSI pin.
+    :param miso_mask: Single-bit mask selecting the MISO pin.
     """
     def __init__(self, io: DigitalIo, clk_div: int, cpol: int, cpha: int, sclk_mask: int = 0b0001, cs_mask: int = 0b0010, mosi_mask: int = 0b0100, miso_mask: int = 0b1000):
         if type(io) != DigitalIo:

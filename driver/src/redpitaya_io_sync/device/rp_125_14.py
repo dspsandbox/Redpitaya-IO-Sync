@@ -9,6 +9,13 @@ from ..io.led import Led
 
 class Rp_125_14(Rp_base):
     """Base class for Red Pitaya STEMLab 125-14 devices (125 MHz, 14-bit ADC/DAC).
+
+    :param ip: IP address or URL
+    :param label: User-defined name
+    :param daisy_0_en: Enable daisy chain sync connector 0
+    :param daisy_1_en: Enable daisy chain sync connector 1
+    :param force: Force bitstream reloading (resets FPGA configuration)
+    
     """
 
     CLK_FREQ = 125e6

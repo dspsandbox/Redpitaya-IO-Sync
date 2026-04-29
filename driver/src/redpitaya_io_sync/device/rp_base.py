@@ -9,6 +9,12 @@ from ..dma.dma import DMA
 class Rp_base():
     """
     Base class for Red Pitaya devices. 
+
+    :param ip: IP address or URL
+    :param label: User-defined name
+    :param daisy_0_en: Enable daisy chain sync connector 0
+    :param daisy_1_en: Enable daisy chain sync connector 1
+    :param force: Force bitstream reloading (resets FPGA configuration)
     """
     def __init__(self, ip: str, label: str, daisy_0_en: bool, daisy_1_en: bool, force: bool):
         self._ip = ip
@@ -218,7 +224,11 @@ class Rp_base():
         self._tcp_ctrl_client.write(addr=self.ADDR_DICT["reg_bank_flush"], val=0x0)
         return
     
-    def get_uid(self):
+    def get_uid(self) -> str:
+        """
+        Return a unique device identifier of the form ``<label>@<ip>``, e.g. ``my_rp@192.168.1.100``.
+
+        """
         uid = f"{self._label}@{self._ip}"
         return uid
 

@@ -15,7 +15,7 @@ class DigitalIo(BaseIo):
     def __init__(self, addr, clk_freq):
         super().__init__(addr, clk_freq)
 
-    def output(self, val: int, mask: int = 0xffff):
+    def output(self, val: int, mask: int = 0b1111):
         """
         Set output value of masked ports (requires ports to be defined as outputs via :meth:`DigitalIo.tristate`).
         E.g. ``val=0b0010`` and ``mask=0b1010`` will result in port[0] -> unchanged, port[1] -> 1, port[2] -> unchanged and port[3] -> 0.
@@ -25,7 +25,7 @@ class DigitalIo(BaseIo):
         """
         self._add_instruction(cmd=DigitalIoCmd.OUTPUT.value, data=((mask << 16) | val))
 
-    def tristate(self, val: int, mask: int = 0xffff):
+    def tristate(self, val: int, mask: int = 0b1111):
         """
         Set direction (output/tristate) of masked ports.
         A ``0`` bit configures the corresponding port as a driven output; a ``1`` bit puts it in high-impedance (input) mode.

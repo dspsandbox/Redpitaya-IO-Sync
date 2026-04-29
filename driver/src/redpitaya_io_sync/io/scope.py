@@ -9,17 +9,6 @@ class ScopeCmd(Enum):
     DEC = 0x2
 
 class ScopeSource(Enum):
-    """
-    Enumeration of available acquisition sources for :class:`Scope`.
-
-    Members:
-
-    - ``RF_IN_0``, ``RF_IN_1`` — RF input channels
-    - ``RF_OUT_0``, ``RF_OUT_1`` — RF output channels
-    - ``DIGITAL_IO_0`` … ``DIGITAL_IO_3`` — Digital IO ports
-    - ``ANALOG_OUT_0`` … ``ANALOG_OUT_3`` — Analog output channels
-    - ``ANALOG_IN_0`` … ``ANALOG_IN_3`` — Analog input channels
-    """
     RF_IN_0 = 0x0
     RF_IN_1 = 0x1
     RF_OUT_0 = 0x2
