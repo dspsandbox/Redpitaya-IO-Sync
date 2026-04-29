@@ -135,6 +135,17 @@ def setup(app):
     app.connect('autodoc-process-docstring', _mark_inherited)
 
 
+_orig_attr_directive_header = AttributeDocumenter.add_directive_header
+
+def _patched_attr_directive_header(self, sig):
+    if isinstance(self.parent, type):
+        member_name = self.objpath[-1] if self.objpath else None
+        if member_name and member_name not in vars(self.parent):
+            self.options.no_value = True
+    _orig_attr_directive_header(self, sig)
+
+AttributeDocumenter.add_directive_header = _patched_attr_directive_header
+
 _orig_add_content = AttributeDocumenter.add_content
 
 def _patched_add_content(self, more_content):
