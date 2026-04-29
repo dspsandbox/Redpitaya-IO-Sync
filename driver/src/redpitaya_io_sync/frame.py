@@ -12,7 +12,7 @@ class IoSyncFrame:
     At instantiation, one IO instance is created for each entry in
     ``device_type.IO_DICT`` and exposed as an attribute with the same name.
     The exact set of attributes therefore depends on the device type passed
-    (e.g. see :class:`~redpitaya_io_sync.device.rp_125_14.Rp_125_14_Z7010`).
+    (e.g. see RP 125-14 Base :attr:`~redpitaya_io_sync.device.rp_125_14.Rp_125_14.IO_DICT`).
     """
 
     def __init__(self, device_type, trig: TriggerSource | None = None):
