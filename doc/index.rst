@@ -1,7 +1,7 @@
 Redpitaya IO Sync
 =================
 
-Library for synchronous and deterministic control of Red Pitaya's digital and analog IOs.
+Library for synchronous and deterministic control of RedPitaya's digital and analog IOs.
 
 .. toctree::
    :maxdepth: 2

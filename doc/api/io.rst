@@ -1,61 +1,63 @@
 IO
 ==
 
-Base
-----
+
+Base IO
+-------
 
 .. autoclass:: redpitaya_io_sync.io.base.BaseIo
    :members:
    :undoc-members:
-
-Sync
-----
-
-.. autoclass:: redpitaya_io_sync.io.sync.TriggerSource
-   :members:
-   :undoc-members:
-
-.. autoclass:: redpitaya_io_sync.io.sync.Sync
-   :members:
-   :undoc-members:
    :inherited-members:
+   
 
-RF
---
-
-.. autoclass:: redpitaya_io_sync.io.rf.RfOut
-   :members:
-   :undoc-members:
-   :inherited-members:
-
-
-Digital IO
-----------
+Digital
+-------
 
 .. autoclass:: redpitaya_io_sync.io.digital.DigitalIo
    :members:
    :undoc-members:
    :inherited-members:
+   :show-inheritance:
 
-Analog Out
-----------
+Analog
+------
 
 .. autoclass:: redpitaya_io_sync.io.analog.AnalogOut
    :members:
    :undoc-members:
    :inherited-members:
+   :show-inheritance:
 
-Scope
------
+RF
+---
+
+.. autoclass:: redpitaya_io_sync.io.rf.RfBase
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:
+
+.. autoclass:: redpitaya_io_sync.io.rf.RfOut
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:
+
+Scope (Digital, Analog, RF acquisition)
+---------------------------------------
 
 .. autoclass:: redpitaya_io_sync.io.scope.ScopeSource
    :members:
    :undoc-members:
+   :show-inheritance:
+
 
 .. autoclass:: redpitaya_io_sync.io.scope.Scope
    :members:
    :undoc-members:
    :inherited-members:
+   :show-inheritance:
 
 LED
 ---
@@ -64,3 +66,4 @@ LED
    :members:
    :undoc-members:
    :inherited-members:
+   :show-inheritance:

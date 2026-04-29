@@ -7,6 +7,9 @@ from ..dma.dma import DMA
 
 
 class Rp_base():
+    """
+    Base class for Red Pitaya devices. 
+    """
     def __init__(self, ip: str, label: str, daisy_0_en: bool, daisy_1_en: bool, force: bool):
         self._ip = ip
         self._label = label

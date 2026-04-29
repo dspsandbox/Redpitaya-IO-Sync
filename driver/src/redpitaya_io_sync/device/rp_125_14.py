@@ -8,7 +8,7 @@ from ..io.led import Led
 
 
 class Rp_125_14(Rp_base):
-    """Base class for Red Pitaya 125-14 devices (125 MHz, 14-bit ADC/DAC).
+    """Base class for Red Pitaya STEMLab 125-14 devices (125 MHz, 14-bit ADC/DAC).
     """
 
     CLK_FREQ = 125e6
@@ -58,7 +58,7 @@ class Rp_125_14(Rp_base):
 
 class Rp_125_14_Z7010(Rp_125_14):
     """
-    Redpitaya-124-14 device class (Z7010 FPGA chipset).
+    Red Pitaya-124-14 device class (7010 FPGA chipset).
 
     :param ip: IP address or URL
     :param label: User-defined name
@@ -77,7 +77,7 @@ class Rp_125_14_Z7010(Rp_125_14):
 
 class Rp_125_14_Z7020(Rp_125_14):
     """
-    Redpitaya-124-14 device class (Z7020 FPGA chipset).
+    Red Pitaya-124-14 device class (Z7020 FPGA chipset).
 
     :param ip: IP address or URL
     :param label: User-defined name
