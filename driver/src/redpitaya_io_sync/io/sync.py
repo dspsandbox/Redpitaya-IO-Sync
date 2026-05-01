@@ -4,6 +4,9 @@ class SyncCmd(Enum):
 
 
 class TriggerSource(Enum):
+    """
+    IO Sync Frame execution trigger source.
+    """
     NONE = 0x0
     EXT_HIGH = 0x1
     EXT_LOW = 0x2

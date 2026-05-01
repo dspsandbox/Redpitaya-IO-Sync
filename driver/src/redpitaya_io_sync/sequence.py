@@ -6,6 +6,16 @@ from .device.rp_base import Rp_base
 
 
 class IoSequence():
+    """
+    Multi-device IO sequence.
+
+    An :class:`IoSequence` coordinates a list of devices by assigning frames to each
+    one and optionally inserting synchronization barriers (:meth:`add_rsync`) between
+    them. Once all frames are added, :meth:`upload` transfers the instruction lists to
+    the devices and :meth:`start` begins execution.
+
+    :param device_list: List of device instances involved in this IO Sequence.
+    """
     def __init__(self, device_list):
         self._rsync_label_list= []
         self._device_dict = {}
@@ -18,6 +28,9 @@ class IoSequence():
     
     
     def reset(self):
+        """
+        Remove scheduled frames and rsync events. 
+        """
         self._check_sequence_done()
         self._rsync_label_list = []
         for device in self._device_dict.values():
@@ -25,20 +38,33 @@ class IoSequence():
 
 
     def add_frame(self, frame, device, label=None):
+        """
+        Assign a frame to a device in the sequence.
+
+        :param frame: :class:`~redpitaya_io_sync.frame.IoSyncFrame` or
+            :class:`~redpitaya_io_sync.frame.ParametrizedIoSyncFrame` to add.
+        :param device: Target device instance. Must be in the sequence device list and
+            compatible with the frame's device type.
+        :param label: Optional label for the frame. Auto-generated if not provided.
+        """
         self._check_sequence_done()
         if (type(frame) is not IoSyncFrame) and (type(frame) is not ParametrizedIoSyncFrame):
-             raise Exception(f"Frame must be of type IoSyncFrame or ParametrizedIoSyncFrame, got {type(frame)}.") 
+             raise Exception(f"Frame must be of type IoSyncFrame or ParametrizedIoSyncFrame, got {type(frame)}.")
         if not issubclass(type(device), Rp_base):
                 raise Exception(f"Provided device attribute is not a valid device instance.")
         if not isinstance(device, frame._device_type) and frame._device_type not in device.COMPATIBLE_DEVICES:
             raise Exception(f"Provided device ({device.get_uid()}) is neither an instance of the frame device class ({frame._device_type.__name__}) nor within its compatible devices ({', '.join([cls.__name__ for cls in frame._device_type.COMPATIBLE_DEVICES])}).")
         if device not in self._device_dict.values():
-            raise Exception(f"Provided device ({device.get_uid()}) is not in the sequence device list.")        
+            raise Exception(f"Provided device ({device.get_uid()}) is not in the sequence device list.")
 
         device._add_frame(frame, label)
-        
+
 
     def add_rsync(self):
+        """
+        Insert a synchronization barrier across all devices (requires a daisy chain / sync connection between devices).
+        All devices wait at this barrier until the slowest one arrives before proceeding to the next frame.
+        """
         self._check_sequence_done()
         label = f"rsync_{len(self._rsync_label_list)}"
         for device in self._device_dict.values():
@@ -46,7 +72,15 @@ class IoSequence():
         self._rsync_label_list.append(label)
 
 
-    def sequence_description(self):      
+    def sequence_description(self):
+        """
+        Return an ASCII table showing the frame layout across all devices.
+
+        Rsync barriers are shown as horizontal lines spanning all columns. Frames
+        triggered by an external source are marked with ``(*)``.
+
+        :rtype: str
+        """
         width_max = 0
         for device_uid in self._device_dict.keys():
             device = self._device_dict[device_uid]
@@ -117,11 +151,18 @@ class IoSequence():
         
         return description
 
-    def upload(self, ):
+    def upload(self):
+        """
+        Upload all frames to their respective devices.
+
+        Compiles and transfers the instruction lists for every device in the sequence.
+        Must be called after all frames (and rsync barriers) have been added, and before
+        :meth:`start`.
+        """
         self._check_sequence_done()
         for device in self._device_dict.values():
             device._upload()
-                    
+
 
     def _check_sequence_done(self, autostop=True):
         status = self.get_status()
@@ -134,38 +175,66 @@ class IoSequence():
             self.stop()
 
     def start(self):
+        """
+        Start execution of the uploaded sequence on all devices simultaneously.
+        """
         self._check_sequence_done()
         for device in self._device_dict.values():
             device._start()
 
-
-
-
     def is_done(self):
+        """
+        Return ``True`` if all devices have finished executing their frames.
+
+        :rtype: bool
+        """
         return all(device_status["done"] for device_status in self.get_status().values())
-    
+
     def is_error(self):
+        """
+        Return ``True`` if any device has reported an error.
+
+        :rtype: bool
+        """
         return any(device_status["error"] for device_status in self.get_status().values())
-    
+
     def wait(self):
+        """
+        Block until the sequence has finished executing.
+
+        Polls :meth:`is_done` in a tight loop. Raises an exception if any device
+        reports an error while waiting.
+
+        """
         while not self.is_done():
             if self.is_error():
                 raise Exception("Sequence error, please check state")
-            
 
     def stop(self):
+        """
+        Stop execution on all devices.
+        """
         for device in self._device_dict.values():
             device._stop()
-            
 
     def get_status(self):
+        """
+        Return the execution status of all devices. See :doc:`/examples/00_led_blink` for an example of status messages.
+
+        :rtype: dict
+        """
         status_dict = {}
         for device_uid, device in self._device_dict.items():
             status_dict[device_uid] = device._get_status()
         return status_dict
 
-
     def get_scope(self):
+        """
+        Retrieve acquisition data from all devices after the sequence has finished.
+        See :doc:`/examples/04_rf_in_out` for and example of scope dictionaries and acquired data.
+
+        :rtype: dict
+        """
         scope_dict = {}
         for device_uid, device in self._device_dict.items():
             scope_dict[device_uid] = device._get_scope()

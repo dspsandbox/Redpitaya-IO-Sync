@@ -1,5 +1,5 @@
 # Redpitaya-IO-Sync
-Library for Synchronous and Deterministic Control of Redpitaya's Digital and Analog IOs
+Library for Synchronous and Deterministic Control of Red Pitaya's Digital and Analog IOs.
 
 ## Features:
 * Real-time control (8ns resolution) of:

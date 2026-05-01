@@ -1,9 +1,9 @@
 IO
 ==
 
-See IOs and pin mapping diagrams `here`_.
+`Link`_ to IOs and pin mapping for Red Pitaya-125-14 devices.
 
-.. _here: https://github.com/dspsandbox/Redpitaya-IO-Sync#ios--pin-mapping
+.. _Link: https://github.com/dspsandbox/Redpitaya-IO-Sync#ios--pin-mapping
 
 Base IO
 -------

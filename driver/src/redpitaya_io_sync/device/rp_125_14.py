@@ -65,13 +65,20 @@ class Rp_125_14(Rp_base):
 
 class Rp_125_14_Z7010(Rp_125_14):
     """
-    Red Pitaya-124-14 device class (7010 FPGA chipset).
+    Red Pitaya STEMLab 125-14 device class (Z7010 FPGA chipset):
+
+    * STEMlab 125-14 (Gen 1)
+    * STEMlab 125-14 Low Noise (Gen 1)
+    * STEMlab 125-14 (Gen 2)
+    * STEMlab 125-14 Pro (Gen 2)
 
     :param ip: IP address or URL
     :param label: User-defined name
     :param daisy_0_en: Enable daisy chain sync connector 0
     :param daisy_1_en: Enable daisy chain sync connector 1
     :param force: Force bitstream reloading (resets FPGA configuration)
+
+
     """
 
     BITSTREAM = "bitstream/io_sync_rp_125_14_z7010.bit"
@@ -84,7 +91,10 @@ class Rp_125_14_Z7010(Rp_125_14):
 
 class Rp_125_14_Z7020(Rp_125_14):
     """
-    Red Pitaya-124-14 device class (Z7020 FPGA chipset).
+    Red Pitaya STEMLab 125-14 device class (Z7020 FPGA chipset):
+
+    * STEMlab 125-14 Z7020 Low Noise (Gen 1)
+    * STEMlab 125-14 Pro Z7020 (Gen 2)
 
     :param ip: IP address or URL
     :param label: User-defined name
@@ -98,5 +108,5 @@ class Rp_125_14_Z7020(Rp_125_14):
     def __init__(self, ip: str, label: str = "rp_125_14_z7020", daisy_0_en: bool = False, daisy_1_en: bool = False, force: bool = False):
         super().__init__(ip, label, daisy_0_en, daisy_1_en, force)  
 
-Rp_125_14_Z7010.COMPATIBLE_DEVICES = [Rp_125_14_Z7020]
+Rp_125_14_Z7010.COMPATIBLE_DEVICES = [Rp_125_14_Z7020] 
 Rp_125_14_Z7020.COMPATIBLE_DEVICES = [Rp_125_14_Z7010]

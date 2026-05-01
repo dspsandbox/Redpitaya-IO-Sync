@@ -102,7 +102,7 @@ class BaseIo():
 
     def set_time(self, val: int):
         """
-        Define new IO time (should be larger or equal than current IO time).
+        Set new IO time (should be larger or equal than current IO time).
 
         :param val: time (in units of clk cycles).
 
@@ -112,7 +112,7 @@ class BaseIo():
         self._tnext = np.uint64(val)
     def set_time_increment(self, val: int):
         """
-        Define IO instruction time increment, i.e. time between consecutive IO instructions. Default time increment after reset is 1 clk cycle.
+        Set IO instruction time increment, i.e. time between consecutive IO instructions. Default time increment after reset is 1 clk cycle.
 
         :param val: time increment (in units of clk cycles).
         """
@@ -126,7 +126,7 @@ class BaseIo():
         """
         return self._tincr
     
-    def delay(self, val: int = 0):
+    def delay(self, val: int):
         """
         Increment current IO time by a specified delay time. Used to retard following IO instruction.
 
