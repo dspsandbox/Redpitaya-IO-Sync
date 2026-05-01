@@ -1,5 +1,5 @@
 Red Pitaya IO Sync
-=================
+==================
 
 Library for synchronous and deterministic control of RedPitaya's digital and analog IOs.
 

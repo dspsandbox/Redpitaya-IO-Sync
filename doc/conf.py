@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+from datetime import date
 import sphinx.util.inspect as _sphinx_inspect
 import sphinx.ext.autodoc as _autodoc
 from sphinx.ext.autodoc import AttributeDocumenter, ClassDocumenter
@@ -197,9 +198,18 @@ AttributeDocumenter.add_content = _patched_add_content
 
 sys.path.insert(0, os.path.abspath("../driver/src"))
 
-project = "redpitaya-io-sync"
-author = "Pau Gómez"
-release = "0.1.1"
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+
+with open(os.path.join(os.path.dirname(__file__), "../driver/pyproject.toml"), "rb") as _f:
+    _pyproject = tomllib.load(_f)
+
+project = _pyproject["project"]["name"]
+author = _pyproject["project"]["authors"][0]["name"]
+release = _pyproject["project"]["version"]
+copyright = f"{date.today().year}, {author}"
 
 extensions = [
     "sphinx.ext.autodoc",
