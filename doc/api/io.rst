@@ -1,7 +1,7 @@
 IO
 ==
 
-`Link`_ to IOs and pin mapping for Red Pitaya-125-14 devices.
+`Link`_ to IOs and pin mapping for Red Pitaya 125-14 devices.
 
 .. _Link: https://github.com/dspsandbox/Redpitaya-IO-Sync#ios--pin-mapping
 
